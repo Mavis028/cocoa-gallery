@@ -114,7 +114,8 @@ button{font:inherit}
 /* LAYERS (exploded bonbon) */
 .layers{position:relative;height:240vh;background:#140a06;color:var(--cream)}
 .l-pin{position:sticky;top:76px;height:calc(100vh - 76px);height:calc(100svh - 76px);contain:layout paint;min-height:560px;overflow:hidden;background:#140a06}
-.l-pour{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0}
+.l-pin::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(to bottom,rgba(10,5,3,.45),rgba(10,5,3,0) 28%,rgba(10,5,3,0) 62%,rgba(10,5,3,.5)),radial-gradient(ellipse at 50% 55%,rgba(0,0,0,0) 45%,rgba(0,0,0,.35) 100%)}
+.l-pour{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0;object-fit:cover;object-position:50% 50%}
 .l-head{position:absolute;left:0;right:0;top:6%;text-align:center;z-index:3;padding:0 24px;will-change:opacity,transform}
 .l-head .eyebrow{color:var(--gold)}
 .l-head h2{text-shadow:0 2px 24px rgba(0,0,0,.6)}
@@ -312,7 +313,10 @@ footer{border-top:1px solid #241f1b;padding:36px 0}
 <!-- LAYERS: the bonbon opens as you scroll -->
   <section class="layers" id="layers" aria-label="Inside a Cocoa Gallery bonbon">
     <div class="l-pin" id="lPin">
-      <canvas class="l-pour" id="lPour" aria-hidden="true"></canvas>
+      <video class="l-pour" id="lPour" muted loop playsinline preload="metadata" poster="media/pour-poster.jpg" aria-hidden="true" disablepictureinpicture>
+        <source src="media/pour.webm" type="video/webm">
+        <source src="media/pour.mp4" type="video/mp4">
+      </video>
       <div class="l-head" id="lHead">
         <p class="eyebrow">Inside the bonbon</p>
         <h2>Take a closer look</h2>
@@ -696,6 +700,7 @@ footer{border-top:1px solid #241f1b;padding:36px 0}
         labels[i].style.transform = 'translate3d(' + (dir * 40 * (1 - lp)).toFixed(1) + 'px,' + (y - (mobile ? 30 : 40)).toFixed(1) + 'px,0)';
       }
       window.__cgPourX = mobile ? 0.30 + 0.20 * away : 0.5;
+      if (window.__cgAlign) window.__cgAlign();
       shadow.style.transform = 'translate(' + (mobile ? away * VW * 0.2 : 0) + 'px,' + ((mobile ? 60 : 110) + 1.5 * gap * open * (1 - away) + baseFinal * away) + 'px) scale(' + (1 + open * 0.15) + ')';
       shadow.style.opacity = (1 - open * 0.4).toFixed(3);
       for (var j = 0; j < words.length; j++) {
@@ -719,90 +724,26 @@ footer{border-top:1px solid #241f1b;padding:36px 0}
     measure(); cur = target = progress(); draw(cur);
   })();
 
-  /* ===== Pouring chocolate background (drawn live, no video) ===== */
+  /* ===== Pouring chocolate background video ===== */
   (function(){
-    var cv = $('lPour'); if (!cv || !cv.getContext) return;
-    var ctx = cv.getContext('2d'), W = 0, H = 0, dpr = 1, bg = null, running = false, visible = false, t0 = performance.now();
+    var v = $('lPour'); if (!v) return;
     var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    function size(){
-      dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-      W = cv.clientWidth; H = cv.clientHeight;
-      cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
-      // static backdrop: warm dark studio light + the pool surface
-      bg = document.createElement('canvas'); bg.width = cv.width; bg.height = cv.height;
-      var b = bg.getContext('2d'); b.scale(dpr, dpr);
-      var g = b.createRadialGradient(W * .5, H * .25, 0, W * .5, H * .4, Math.max(W, H) * .8);
-      g.addColorStop(0, '#4a2a1a'); g.addColorStop(.45, '#26140c'); g.addColorStop(1, '#0d0604');
-      b.fillStyle = g; b.fillRect(0, 0, W, H);
-      var hz = H * .64;
-      var pg = b.createLinearGradient(0, hz, 0, H);
-      pg.addColorStop(0, '#3a1f12'); pg.addColorStop(.35, '#4e2b19'); pg.addColorStop(1, '#2a160c');
-      b.fillStyle = pg; b.fillRect(0, hz, W, H - hz);
-      var sh = b.createLinearGradient(0, hz - 6, 0, hz + 30);          // soft sheen along the far edge
-      sh.addColorStop(0, 'rgba(255,190,140,0)'); sh.addColorStop(.3, 'rgba(255,190,140,.18)'); sh.addColorStop(1, 'rgba(255,190,140,0)');
-      b.fillStyle = sh; b.fillRect(0, hz - 6, W, 36);
-      var vg = b.createRadialGradient(W * .5, H * .55, Math.min(W, H) * .3, W * .5, H * .55, Math.max(W, H) * .75);   // vignette
-      vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.55)');
-      b.fillStyle = vg; b.fillRect(0, 0, W, H);
-    }
-    function frame(now){
-      var t = (now - t0) / 1000;
-      ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(bg, 0, 0); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      var cx = W * (window.__cgPourX || .5), iy = H * .74, maxR = Math.max(W * .62, 420), sp = 70;
-      // ripples spreading out in the pool (flattened circles = perspective)
-      for (var k = 0; k < 9; k++) {
-        var r = ((t * 46) + k * sp) % (sp * 9);
-        if (r < 8) continue;
-        var a = Math.max(0, 1 - r / (sp * 9)) * .55, ry = r * .2;
-        ctx.lineWidth = 2.4;
-        ctx.strokeStyle = 'rgba(255,196,150,' + (a * .55).toFixed(3) + ')';
-        ctx.beginPath(); ctx.ellipse(cx, iy - 1.5, r, ry, 0, Math.PI * 1.02, Math.PI * 1.98); ctx.stroke();
-        ctx.strokeStyle = 'rgba(15,6,2,' + (a * .9).toFixed(3) + ')';
-        ctx.beginPath(); ctx.ellipse(cx, iy + 1.5, r, ry, 0, 0, Math.PI); ctx.stroke();
-        ctx.strokeStyle = 'rgba(160,95,60,' + (a * .5).toFixed(3) + ')';
-        ctx.beginPath(); ctx.ellipse(cx, iy + 3, r * .985, ry * .96, 0, Math.PI * .1, Math.PI * .9); ctx.stroke();
-      }
-      // reflection of the stream in the pool
-      var rf = ctx.createLinearGradient(0, iy, 0, iy + H * .2);
-      rf.addColorStop(0, 'rgba(150,85,50,.35)'); rf.addColorStop(1, 'rgba(150,85,50,0)');
-      ctx.fillStyle = rf; ctx.fillRect(cx - 14, iy, 28, H * .2);
-      // the falling stream: narrow, glossy, gently wobbling, widening where it meets the pool
-      var top = -10, steps = 40, L = [], R = [];
-      for (var i = 0; i <= steps; i++) {
-        var f = i / steps, y = top + (iy - top) * f;
-        var w = 10 + 6 * (1 - f) + 16 * Math.pow(f, 7);
-        var x = cx + Math.sin(f * 5 + t * 1.6) * 2.2 * f + Math.sin(t * .7) * 1.2;
-        L.push([x - w, y]); R.push([x + w, y]);
-      }
-      var sg = ctx.createLinearGradient(cx - 30, 0, cx + 30, 0);
-      sg.addColorStop(0, '#2a140a'); sg.addColorStop(.32, '#6b3a22'); sg.addColorStop(.46, '#b8774c');
-      sg.addColorStop(.52, '#8a4e2e'); sg.addColorStop(.7, '#4a2614'); sg.addColorStop(1, '#1f0e06');
-      ctx.fillStyle = sg; ctx.beginPath(); ctx.moveTo(L[0][0], L[0][1]);
-      for (i = 1; i < L.length; i++) ctx.lineTo(L[i][0], L[i][1]);
-      for (i = R.length - 1; i >= 0; i--) ctx.lineTo(R[i][0], R[i][1]);
-      ctx.closePath(); ctx.fill();
-      // flowing highlight streaks travelling down the stream
-      ctx.save(); ctx.clip();
-      for (var s = 0; s < 6; s++) {
-        var yy = ((t * 260 + s * (iy / 6)) % (iy + 80)) - 40;
-        var hg = ctx.createLinearGradient(0, yy - 40, 0, yy + 40);
-        hg.addColorStop(0, 'rgba(255,215,180,0)'); hg.addColorStop(.5, 'rgba(255,215,180,.22)'); hg.addColorStop(1, 'rgba(255,215,180,0)');
-        ctx.fillStyle = hg; ctx.fillRect(cx - 4, yy - 40, 5, 80);
-      }
-      ctx.restore();
-      // the little mound where the stream lands
-      var mg = ctx.createRadialGradient(cx - 8, iy - 8, 2, cx, iy, 46);
-      mg.addColorStop(0, '#a5673f'); mg.addColorStop(.5, '#5e3320'); mg.addColorStop(1, 'rgba(58,31,18,0)');
-      ctx.fillStyle = mg; ctx.beginPath(); ctx.ellipse(cx, iy, 46, 12, 0, 0, Math.PI * 2); ctx.fill();
-      if (running) requestAnimationFrame(frame);
-    }
-    function start(){ if (running || reduce) return; running = true; requestAnimationFrame(frame); }
-    function stop(){ running = false; }
-    size(); frame(performance.now());
-    window.addEventListener('resize', function(){ size(); if (!running) frame(performance.now()); });
+    function play(){ if (reduce) return; var p = v.play(); if (p && p.catch) p.catch(function(){}); }
     if ('IntersectionObserver' in window) {
-      new IntersectionObserver(function(es){ visible = es[0].isIntersecting; visible ? start() : stop(); }, { rootMargin: '100px' }).observe(cv);
-    } else start();
+      new IntersectionObserver(function(es){ es[0].isIntersecting ? (v.preload = 'auto', play()) : v.pause(); }, { rootMargin: '200px' }).observe(v);
+    } else play();
+    // keep the stream lined up with the bonbon (phones put the bonbon left of centre)
+    var lastX = -1;
+    function align(){
+      var bw = v.clientWidth, bh = v.clientHeight, iw = bh * 16 / 9;
+      var want = window.__cgPourX || 0.5;
+      var pos = 50;
+      if (iw > bw + 1) pos = Math.max(0, Math.min(100, (want * bw - 0.5 * iw) / (bw - iw) * 100));
+      if (Math.abs(pos - lastX) > 0.2) { v.style.objectPosition = pos.toFixed(1) + '% 50%'; lastX = pos; }
+    }
+    window.__cgAlign = align;
+    window.addEventListener('resize', function(){ lastX = -1; align(); });
+    align();
   })();
 
   renderSizes(); renderBox();
