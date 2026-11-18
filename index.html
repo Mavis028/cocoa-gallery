@@ -112,26 +112,29 @@ button{font:inherit}
 }
 
 /* LAYERS (exploded bonbon) */
-.layers{position:relative;height:240vh;background:#f6e6df;color:var(--ink)}
-.l-pin{position:sticky;top:76px;height:calc(100vh - 76px);height:calc(100svh - 76px);contain:layout paint;min-height:560px;overflow:hidden;background:radial-gradient(ellipse at 50% 45%,#fbf1ec 0%,#f6e6df 55%,#efd8ce 100%)}
+.layers{position:relative;height:240vh;background:#140a06;color:var(--cream)}
+.l-pin{position:sticky;top:76px;height:calc(100vh - 76px);height:calc(100svh - 76px);contain:layout paint;min-height:560px;overflow:hidden;background:#140a06}
+.l-pour{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0}
 .l-head{position:absolute;left:0;right:0;top:6%;text-align:center;z-index:3;padding:0 24px;will-change:opacity,transform}
-.l-head .eyebrow{color:var(--gold-dark)}
+.l-head .eyebrow{color:var(--gold)}
+.l-head h2{text-shadow:0 2px 24px rgba(0,0,0,.6)}
 .l-head h2{margin:0;font-family:var(--serif);font-weight:400;font-size:clamp(36px,5vw,64px);line-height:1.02}
 .l-stage{position:absolute;left:50%;top:50%;width:var(--LS);height:var(--LS);margin:calc(var(--LS) / -2) 0 0 calc(var(--LS) / -2);z-index:2}
 .l-layer{position:absolute;inset:0;will-change:transform,opacity}
 .l-layer img{width:100%;height:100%;display:block}
-.l-shadow{position:absolute;left:50%;top:50%;width:calc(var(--LS) * .7);height:calc(var(--LS) * .1);margin-left:calc(var(--LS) * -.35);border-radius:50%;background:radial-gradient(closest-side,rgba(60,30,20,.28),transparent);will-change:transform,opacity}
+.l-shadow{position:absolute;left:50%;top:50%;width:calc(var(--LS) * .7);height:calc(var(--LS) * .1);margin-left:calc(var(--LS) * -.35);border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.55),transparent);will-change:transform,opacity}
 .l-label{position:absolute;top:50%;width:min(300px,30vw);z-index:3;opacity:0;will-change:transform,opacity}
 .l-label.left{right:calc(50% + var(--LS) * .42);text-align:right}
 .l-label.right{left:calc(50% + var(--LS) * .42)}
-.l-label .num{font-family:var(--serif);font-size:15px;color:var(--gold-dark)}
+.l-label .num{font-family:var(--serif);font-size:15px;color:var(--gold)}
 .l-label h3{margin:2px 0 6px;font-family:var(--serif);font-weight:400;font-size:clamp(20px,2vw,28px);line-height:1.1}
-.l-label p{margin:0;font-size:15px;line-height:1.55;color:#5b4c42}
-.l-label::before{content:"";position:absolute;top:14px;width:56px;height:1px;background:#b08d6a}
+.l-label p{margin:0;font-size:15px;line-height:1.55;color:rgba(244,239,233,.78)}
+.l-label{text-shadow:0 2px 14px rgba(0,0,0,.7)}
+.l-label::before{content:"";position:absolute;top:14px;width:56px;height:1px;background:rgba(226,184,120,.7)}
 .l-label.left::before{right:-70px}.l-label.right::before{left:-70px}
-.l-words{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);z-index:1;text-align:center;font-family:var(--serif);font-size:clamp(34px,4.8vw,70px);line-height:.98;color:#b4452f;pointer-events:none}
+.l-words{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);z-index:1;text-align:center;font-family:var(--serif);font-size:clamp(34px,4.8vw,70px);line-height:.98;color:var(--gold);pointer-events:none;text-shadow:0 4px 30px rgba(0,0,0,.65)}
 .l-words span{display:block;will-change:transform,opacity;opacity:0}
-.l-words span:nth-child(2){color:#3a2015;font-style:italic}
+.l-words span:nth-child(2){color:var(--cream);font-style:italic}
 .layers{--LS:400px}
 @media (max-width:900px){
   .layers{--LS:210px}
@@ -336,6 +339,7 @@ footer{border-top:1px solid #241f1b;padding:36px 0}
 <!-- LAYERS: the bonbon opens as you scroll -->
   <section class="layers" id="layers" aria-label="Inside a Cocoa Gallery bonbon">
     <div class="l-pin" id="lPin">
+      <canvas class="l-pour" id="lPour" aria-hidden="true"></canvas>
       <div class="l-head" id="lHead">
         <p class="eyebrow">Inside the bonbon</p>
         <h2>Take a closer look</h2>
@@ -718,6 +722,7 @@ footer{border-top:1px solid #241f1b;padding:36px 0}
         labels[i].style.opacity = lp.toFixed(3);
         labels[i].style.transform = 'translate3d(' + (dir * 40 * (1 - lp)).toFixed(1) + 'px,' + (y - (mobile ? 30 : 40)).toFixed(1) + 'px,0)';
       }
+      window.__cgPourX = mobile ? 0.30 + 0.20 * away : 0.5;
       shadow.style.transform = 'translate(' + (mobile ? away * VW * 0.2 : 0) + 'px,' + ((mobile ? 60 : 110) + 1.5 * gap * open * (1 - away) + baseFinal * away) + 'px) scale(' + (1 + open * 0.15) + ')';
       shadow.style.opacity = (1 - open * 0.4).toFixed(3);
       for (var j = 0; j < words.length; j++) {
@@ -739,6 +744,92 @@ footer{border-top:1px solid #241f1b;padding:36px 0}
     window.addEventListener('resize', function(){ measure(); lastP = -1; kick(); });
     window.addEventListener('load', function(){ measure(); lastP = -1; kick(); });
     measure(); cur = target = progress(); draw(cur);
+  })();
+
+  /* ===== Pouring chocolate background (drawn live, no video) ===== */
+  (function(){
+    var cv = $('lPour'); if (!cv || !cv.getContext) return;
+    var ctx = cv.getContext('2d'), W = 0, H = 0, dpr = 1, bg = null, running = false, visible = false, t0 = performance.now();
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function size(){
+      dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      W = cv.clientWidth; H = cv.clientHeight;
+      cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+      // static backdrop: warm dark studio light + the pool surface
+      bg = document.createElement('canvas'); bg.width = cv.width; bg.height = cv.height;
+      var b = bg.getContext('2d'); b.scale(dpr, dpr);
+      var g = b.createRadialGradient(W * .5, H * .25, 0, W * .5, H * .4, Math.max(W, H) * .8);
+      g.addColorStop(0, '#4a2a1a'); g.addColorStop(.45, '#26140c'); g.addColorStop(1, '#0d0604');
+      b.fillStyle = g; b.fillRect(0, 0, W, H);
+      var hz = H * .64;
+      var pg = b.createLinearGradient(0, hz, 0, H);
+      pg.addColorStop(0, '#3a1f12'); pg.addColorStop(.35, '#4e2b19'); pg.addColorStop(1, '#2a160c');
+      b.fillStyle = pg; b.fillRect(0, hz, W, H - hz);
+      var sh = b.createLinearGradient(0, hz - 6, 0, hz + 30);          // soft sheen along the far edge
+      sh.addColorStop(0, 'rgba(255,190,140,0)'); sh.addColorStop(.3, 'rgba(255,190,140,.18)'); sh.addColorStop(1, 'rgba(255,190,140,0)');
+      b.fillStyle = sh; b.fillRect(0, hz - 6, W, 36);
+      var vg = b.createRadialGradient(W * .5, H * .55, Math.min(W, H) * .3, W * .5, H * .55, Math.max(W, H) * .75);   // vignette
+      vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.55)');
+      b.fillStyle = vg; b.fillRect(0, 0, W, H);
+    }
+    function frame(now){
+      var t = (now - t0) / 1000;
+      ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(bg, 0, 0); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      var cx = W * (window.__cgPourX || .5), iy = H * .74, maxR = Math.max(W * .62, 420), sp = 70;
+      // ripples spreading out in the pool (flattened circles = perspective)
+      for (var k = 0; k < 9; k++) {
+        var r = ((t * 46) + k * sp) % (sp * 9);
+        if (r < 8) continue;
+        var a = Math.max(0, 1 - r / (sp * 9)) * .55, ry = r * .2;
+        ctx.lineWidth = 2.4;
+        ctx.strokeStyle = 'rgba(255,196,150,' + (a * .55).toFixed(3) + ')';
+        ctx.beginPath(); ctx.ellipse(cx, iy - 1.5, r, ry, 0, Math.PI * 1.02, Math.PI * 1.98); ctx.stroke();
+        ctx.strokeStyle = 'rgba(15,6,2,' + (a * .9).toFixed(3) + ')';
+        ctx.beginPath(); ctx.ellipse(cx, iy + 1.5, r, ry, 0, 0, Math.PI); ctx.stroke();
+        ctx.strokeStyle = 'rgba(160,95,60,' + (a * .5).toFixed(3) + ')';
+        ctx.beginPath(); ctx.ellipse(cx, iy + 3, r * .985, ry * .96, 0, Math.PI * .1, Math.PI * .9); ctx.stroke();
+      }
+      // reflection of the stream in the pool
+      var rf = ctx.createLinearGradient(0, iy, 0, iy + H * .2);
+      rf.addColorStop(0, 'rgba(150,85,50,.35)'); rf.addColorStop(1, 'rgba(150,85,50,0)');
+      ctx.fillStyle = rf; ctx.fillRect(cx - 14, iy, 28, H * .2);
+      // the falling stream: narrow, glossy, gently wobbling, widening where it meets the pool
+      var top = -10, steps = 40, L = [], R = [];
+      for (var i = 0; i <= steps; i++) {
+        var f = i / steps, y = top + (iy - top) * f;
+        var w = 10 + 6 * (1 - f) + 16 * Math.pow(f, 7);
+        var x = cx + Math.sin(f * 5 + t * 1.6) * 2.2 * f + Math.sin(t * .7) * 1.2;
+        L.push([x - w, y]); R.push([x + w, y]);
+      }
+      var sg = ctx.createLinearGradient(cx - 30, 0, cx + 30, 0);
+      sg.addColorStop(0, '#2a140a'); sg.addColorStop(.32, '#6b3a22'); sg.addColorStop(.46, '#b8774c');
+      sg.addColorStop(.52, '#8a4e2e'); sg.addColorStop(.7, '#4a2614'); sg.addColorStop(1, '#1f0e06');
+      ctx.fillStyle = sg; ctx.beginPath(); ctx.moveTo(L[0][0], L[0][1]);
+      for (i = 1; i < L.length; i++) ctx.lineTo(L[i][0], L[i][1]);
+      for (i = R.length - 1; i >= 0; i--) ctx.lineTo(R[i][0], R[i][1]);
+      ctx.closePath(); ctx.fill();
+      // flowing highlight streaks travelling down the stream
+      ctx.save(); ctx.clip();
+      for (var s = 0; s < 6; s++) {
+        var yy = ((t * 260 + s * (iy / 6)) % (iy + 80)) - 40;
+        var hg = ctx.createLinearGradient(0, yy - 40, 0, yy + 40);
+        hg.addColorStop(0, 'rgba(255,215,180,0)'); hg.addColorStop(.5, 'rgba(255,215,180,.22)'); hg.addColorStop(1, 'rgba(255,215,180,0)');
+        ctx.fillStyle = hg; ctx.fillRect(cx - 4, yy - 40, 5, 80);
+      }
+      ctx.restore();
+      // the little mound where the stream lands
+      var mg = ctx.createRadialGradient(cx - 8, iy - 8, 2, cx, iy, 46);
+      mg.addColorStop(0, '#a5673f'); mg.addColorStop(.5, '#5e3320'); mg.addColorStop(1, 'rgba(58,31,18,0)');
+      ctx.fillStyle = mg; ctx.beginPath(); ctx.ellipse(cx, iy, 46, 12, 0, 0, Math.PI * 2); ctx.fill();
+      if (running) requestAnimationFrame(frame);
+    }
+    function start(){ if (running || reduce) return; running = true; requestAnimationFrame(frame); }
+    function stop(){ running = false; }
+    size(); frame(performance.now());
+    window.addEventListener('resize', function(){ size(); if (!running) frame(performance.now()); });
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function(es){ visible = es[0].isIntersecting; visible ? start() : stop(); }, { rootMargin: '100px' }).observe(cv);
+    } else start();
   })();
 
   renderSizes(); renderBox();
