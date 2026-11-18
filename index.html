@@ -8,13 +8,13 @@
 <meta name="theme-color" content="#0b0908">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,700;1,6..96,400&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet">
 <style>
 :root{
   --ink:#0b0908; --ink-2:#110e0c; --ink-3:#17120f; --line:#2a2420; --line-2:#4a423b;
   --cream:#f4efe9; --cream-2:#fbf8f4; --muted:#bdb3a8; --muted-2:#a0968b;
   --gold:#e2b878; --gold-dark:#7a5a34;
-  --serif:'Bodoni Moda', Georgia, serif; --sans:'Manrope', system-ui, sans-serif;
+  --serif:'DM Serif Display', Georgia, serif; --sans:'DM Sans', system-ui, sans-serif;
   --ease:cubic-bezier(.2,.7,.2,1);
 }
 *{box-sizing:border-box}
@@ -25,7 +25,7 @@ img{max-width:100%;display:block}
 button{font:inherit}
 .wrap{max-width:1280px;margin:0 auto;padding:0 24px}
 .eyebrow{margin:0 0 14px;text-transform:uppercase;letter-spacing:4px;font-size:12px;font-weight:700;color:var(--gold)}
-.h2{margin:0;font-family:var(--serif);font-weight:400;font-size:clamp(40px,5.5vw,76px);letter-spacing:-1.5px;line-height:1}
+.h2{margin:0;font-family:var(--serif);font-weight:400;font-size:clamp(40px,5.5vw,76px);letter-spacing:-.5px;line-height:1.02}
 .h2 em{font-style:italic;color:var(--gold)}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:54px;padding:0 30px;border-radius:999px;font-weight:700;text-decoration:none;border:1px solid transparent;cursor:pointer;transition:transform .2s,background .2s,color .2s,border-color .2s}
 .btn:hover{transform:translateY(-2px)}
@@ -39,7 +39,7 @@ button{font:inherit}
 .nav.scrolled{border-color:var(--line)}
 .nav-in{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:76px}
 .logo{display:flex;align-items:baseline;text-decoration:none;color:var(--cream);font-family:var(--serif);font-size:28px;letter-spacing:-.5px}
-.logo b{font-weight:700}.logo i{color:var(--gold);font-weight:400}
+.logo b{font-weight:400}.logo i{color:var(--gold);font-weight:400}
 .logo:hover{color:var(--cream)}
 .menu{display:flex;align-items:center;gap:26px;font-size:15px}
 .menu a{color:#d9d0c6;text-decoration:none}.menu a:hover{color:var(--cream)}
@@ -62,7 +62,7 @@ button{font:inherit}
 .pin::before{content:"";position:absolute;right:-12vw;top:-20vh;width:62vw;height:140vh;border-radius:var(--shape,44% 56% 38% 62% / 52% 40% 60% 48%);background:var(--blob,#7a1a20);transition:background-color .9s var(--ease),border-radius 1.2s var(--ease),transform 1.2s var(--ease);transform:rotate(var(--blobRot,0deg))}
 .pin-in{position:relative;z-index:1;height:100%;max-width:1280px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);align-items:center;gap:24px}
 .s-copy{max-width:520px}
-.s-brand{margin:0 0 26px;display:flex;align-items:center;gap:12px;font-size:12px;letter-spacing:4px;text-transform:uppercase;font-weight:700;color:rgba(255,255,255,.75)}
+.s-brand{margin:0 0 26px;display:flex;align-items:center;gap:12px;font-size:11px;letter-spacing:3px;white-space:nowrap;text-transform:uppercase;font-weight:700;color:rgba(255,255,255,.75)}
 .s-brand::before{content:"";width:40px;height:1px;background:currentColor}
 .s-count{font-family:var(--serif);font-size:20px;color:rgba(255,255,255,.7);margin:0 0 10px}
 .s-count b{font-weight:700;color:#fff;font-size:28px}
@@ -70,7 +70,7 @@ button{font:inherit}
 .s-text.out{opacity:0;transform:translateY(-24px)}
 .s-text.pre{opacity:0;transform:translateY(28px);transition:none}
 .s-type{display:inline-block;margin:0 0 16px;padding:6px 14px;border-radius:999px;background:rgba(255,255,255,.14);color:#fff;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase}
-.s-name{margin:0;font-family:var(--serif);font-weight:400;font-size:clamp(40px,5.6vw,84px);line-height:1;letter-spacing:-1.5px;color:#fff;min-height:2em}
+.s-name{margin:0;font-family:var(--serif);font-weight:400;font-size:clamp(40px,5.6vw,84px);line-height:1.02;letter-spacing:-.5px;color:#fff;min-height:2em}
 .s-desc{margin:20px 0 0;font-size:18px;line-height:1.65;color:rgba(255,255,255,.82);max-width:440px;min-height:3.3em}
 .s-cta{margin-top:30px;display:flex;flex-wrap:wrap;gap:12px}
 .btn-white{background:#fff;color:var(--ink)}.btn-white:hover{color:var(--ink);background:#f4efe9}
