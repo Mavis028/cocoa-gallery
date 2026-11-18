@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Cocoa Gallery — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1d1512;--ink2:#5b4c42;--muted:#7a6a5e;--line:#e6ddd3;--bg:#f6f1eb;--card:#fffdfa;--gold:#9a6428;--goldbg:#f3e7d6;--serif:'DM Serif Display',Georgia,serif;--sans:'DM Sans',system-ui,sans-serif;
+  --new:#1f5fae;--newbg:#e4eefb;--prep:#8a5a00;--prepbg:#fbf0d9;--ready:#6a3fa0;--readybg:#efe6fa;--done:#2d6a3e;--donebg:#e3f2e7;--cancel:#8a2a2a;--cancelbg:#f8e3e3}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px}
+a{color:var(--gold)}
+button,input,select,textarea{font:inherit}
+.hidden{display:none !important}
+.wrap{max-width:1240px;margin:0 auto;padding:0 20px}
+/* top bar */
+.top{background:#0b0908;color:#f4efe9;position:sticky;top:0;z-index:20}
+.top-in{display:flex;flex-wrap:wrap;align-items:center;gap:16px;min-height:64px}
+.logo{font-family:var(--serif);font-size:22px;color:#f4efe9;text-decoration:none;margin-right:auto}
+.logo i{color:#e2b878}
+.logo small{font-family:var(--sans);font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#bdb3a8;margin-left:10px}
+.tabs{display:flex;gap:4px}
+.tab{min-height:44px;padding:0 16px;border-radius:999px;border:0;background:transparent;color:#d9d0c6;cursor:pointer;font-weight:500;display:inline-flex;align-items:center;gap:8px}
+.tab[aria-selected="true"]{background:#f4efe9;color:#0b0908}
+.tab .pill{min-width:22px;height:22px;padding:0 6px;border-radius:999px;background:#e2b878;color:#0b0908;font-size:12px;font-weight:700;display:inline-flex;align-items:center;justify-content:center}
+.signout{min-height:40px;padding:0 14px;border-radius:999px;border:1px solid #4a423b;background:transparent;color:#d9d0c6;cursor:pointer}
+.demo-bar{background:#fbf0d9;color:#5a3c00;border-bottom:1px solid #ecd9b0}
+.demo-bar .wrap{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;padding-top:10px;padding-bottom:10px;font-size:14px}
+.demo-bar button{min-height:36px;padding:0 12px;border-radius:999px;border:1px solid #d9b877;background:#fff8ea;color:#5a3c00;cursor:pointer;font-weight:700}
+main{padding:28px 0 60px}
+h1.page{margin:0 0 4px;font-family:var(--serif);font-weight:400;font-size:34px}
+.sub{margin:0 0 22px;color:var(--ink2)}
+.row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.seg{display:inline-flex;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:3px}
+.seg button{min-height:38px;padding:0 14px;border:0;border-radius:999px;background:transparent;color:var(--ink2);cursor:pointer;font-weight:500}
+.seg button[aria-pressed="true"]{background:var(--ink);color:#fff}
+/* tiles */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin:18px 0}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+.tile .k{margin:0;color:var(--ink2);font-size:13px;font-weight:500}
+.tile .v{margin:6px 0 0;font-family:var(--serif);font-size:34px;line-height:1}
+.tile .s{margin:8px 0 0;color:var(--muted);font-size:13px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,520px),1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 18px 12px;min-width:0}
+.card h2{margin:0;font-size:16px;font-weight:700}
+.card .cs{margin:2px 0 10px;color:var(--muted);font-size:13px}
+.chart{position:relative;width:100%}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.tip{position:absolute;pointer-events:none;background:#1d1512;color:#fff;padding:8px 10px;border-radius:8px;font-size:13px;line-height:1.35;white-space:nowrap;transform:translate(-50%,-115%);opacity:0;transition:opacity .12s}
+.tip b{display:block;font-size:15px}
+.tip.on{opacity:1}
+.empty{padding:40px 10px;text-align:center;color:var(--muted)}
+details.tbl{margin-top:6px}
+details.tbl summary{cursor:pointer;color:var(--ink2);font-size:13px;min-height:32px;display:flex;align-items:center}
+details.tbl table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+details.tbl td,details.tbl th{padding:4px 6px;border-bottom:1px solid var(--line);text-align:left}
+details.tbl td:last-child,details.tbl th:last-child{text-align:right}
+/* orders */
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px}
+.search{min-height:42px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);min-width:min(100%,260px)}
+.tablewrap{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:14px}
+table.orders{width:100%;border-collapse:collapse;min-width:820px}
+table.orders th{font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);text-align:left;padding:12px 14px;border-bottom:1px solid var(--line);font-weight:700}
+table.orders td{padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+table.orders tr:last-child td{border-bottom:0}
+.items{margin:0;padding:0;list-style:none;font-size:13px;color:var(--ink2)}
+.cust b{display:block}
+.cust span{color:var(--muted);font-size:13px}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700}
+.badge::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.st-new{color:var(--new);background:var(--newbg)}.st-preparing{color:var(--prep);background:var(--prepbg)}.st-ready{color:var(--ready);background:var(--readybg)}.st-delivered{color:var(--done);background:var(--donebg)}.st-cancelled{color:var(--cancel);background:var(--cancelbg)}
+select.status{min-height:38px;border-radius:10px;border:1px solid var(--line);background:#fff;padding:0 8px;margin-top:6px}
+.wa{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;text-decoration:none}
+/* products */
+.plist{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,330px),1fr));gap:14px}
+.prod{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.prod-top{display:flex;gap:12px;align-items:center}
+.prod-top img{width:72px;height:72px;border-radius:12px;object-fit:cover;background:#ece7e2;flex:none}
+.prod label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:700;color:var(--ink2)}
+.prod input[type=text],.prod textarea,.prod input[type=number]{min-height:40px;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:#fff;color:var(--ink);font-weight:400;font-size:14px}
+.prod textarea{resize:vertical;min-height:62px}
+.toggles{display:flex;flex-wrap:wrap;gap:16px}
+.toggles label{flex-direction:row;align-items:center;gap:8px;font-size:14px;font-weight:500;color:var(--ink);min-height:36px}
+.toggles input{width:20px;height:20px;accent-color:var(--gold)}
+.prod-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.btn{min-height:42px;padding:0 16px;border-radius:999px;border:1px solid transparent;cursor:pointer;font-weight:700;display:inline-flex;align-items:center;gap:8px}
+.btn-dark{background:var(--ink);color:#fff}
+.btn-line{background:transparent;border-color:var(--line);color:var(--ink)}
+.btn:disabled{opacity:.5;cursor:default}
+.saved{font-size:13px;color:var(--done);font-weight:700}
+.file{position:relative;overflow:hidden}
+.file input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.boxes{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:18px}
+.boxes h2{margin:0 0 4px;font-size:16px}
+.box-row{display:flex;flex-wrap:wrap;gap:10px;align-items:end;margin-top:10px}
+.box-row label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:700;color:var(--ink2)}
+.box-row input{min-height:42px;width:140px;padding:0 10px;border-radius:10px;border:1px solid var(--line);background:#fff}
+.icon-btn{min-height:42px;min-width:42px;border-radius:10px;border:1px solid var(--line);background:#fff;cursor:pointer}
+/* login */
+.login{max-width:400px;margin:10vh auto;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:28px}
+.login h1{margin:0 0 6px;font-family:var(--serif);font-weight:400;font-size:30px}
+.login label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:700;margin-top:14px}
+.login input{min-height:46px;padding:0 12px;border-radius:10px;border:1px solid var(--line);font-size:16px}
+.login .btn{width:100%;justify-content:center;margin-top:20px;min-height:48px}
+.err{color:var(--cancel);font-weight:700;font-size:14px;min-height:20px;margin:10px 0 0}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:#1d1512;color:#fff;padding:12px 18px;border-radius:999px;font-weight:700;opacity:0;transition:.25s;pointer-events:none;z-index:50}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+
+<div id="loginView" class="hidden">
+  <form class="login" id="loginForm">
+    <h1>Dashboard</h1>
+    <p class="sub" style="margin:0">Cocoa Gallery — sign in to manage orders and products.</p>
+    <label>Email<input name="email" type="email" autocomplete="username" required></label>
+    <label>Password<input name="password" type="password" autocomplete="current-password" required></label>
+    <p class="err" id="loginErr" role="alert"></p>
+    <button class="btn btn-dark" type="submit">Sign in</button>
+  </form>
+</div>
+
+<div id="appView" class="hidden">
+  <header class="top">
+    <div class="wrap top-in">
+      <a class="logo" href="index.html">cocoa<i>gallery</i><small>Dashboard</small></a>
+      <nav class="tabs" role="tablist" aria-label="Dashboard sections">
+        <button class="tab" role="tab" data-tab="overview" aria-selected="true">Overview</button>
+        <button class="tab" role="tab" data-tab="orders" aria-selected="false">Orders <span class="pill hidden" id="newPill">0</span></button>
+        <button class="tab" role="tab" data-tab="products" aria-selected="false">Products</button>
+      </nav>
+      <button class="signout" id="signOut" type="button">Sign out</button>
+    </div>
+  </header>
+  <div class="demo-bar hidden" id="demoBar">
+    <div class="wrap">
+      <span><b>Demo mode</b> — not connected to the database yet. Everything is saved only in this browser, and the sample orders are made up.</span>
+      <span class="row"><button type="button" id="seedDemo">Fill with sample data</button><button type="button" id="clearDemo">Clear demo data</button></span>
+    </div>
+  </div>
+
+  <main class="wrap">
+    <!-- OVERVIEW -->
+    <section data-view="overview">
+      <h1 class="page">Overview</h1>
+      <p class="sub">How the shop is doing.</p>
+      <div class="row">
+        <div class="seg" role="group" aria-label="Time range" id="range">
+          <button type="button" data-days="7" aria-pressed="false">7 days</button>
+          <button type="button" data-days="30" aria-pressed="true">30 days</button>
+          <button type="button" data-days="90" aria-pressed="false">90 days</button>
+        </div>
+      </div>
+      <div class="tiles" id="tiles"></div>
+      <div class="cards">
+        <div class="card"><h2>Orders per day</h2><p class="cs">All orders except cancelled</p><div class="chart" id="chOrders"></div></div>
+        <div class="card"><h2>Website visits per day</h2><p class="cs">One per visitor session</p><div class="chart" id="chVisits"></div></div>
+        <div class="card"><h2>Most popular flavours</h2><p class="cs">Pieces ordered</p><div class="chart" id="chTop"></div></div>
+        <div class="card"><h2>Orders by status</h2><p class="cs">In this period</p><div class="chart" id="chStatus"></div></div>
+      </div>
+    </section>
+
+    <!-- ORDERS -->
+    <section data-view="orders" class="hidden">
+      <h1 class="page">Orders</h1>
+      <p class="sub">Change an order's status as you prepare and deliver it. New orders appear here automatically.</p>
+      <div class="toolbar">
+        <div class="seg" role="group" aria-label="Filter by status" id="statusFilter"></div>
+        <input class="search" id="search" type="search" placeholder="Search name or phone" aria-label="Search orders">
+      </div>
+      <div class="tablewrap"><table class="orders"><thead><tr><th>Order</th><th>Customer</th><th>Box</th><th>Address & note</th><th>Total</th><th>Status</th></tr></thead><tbody id="orderRows"></tbody></table></div>
+    </section>
+
+    <!-- PRODUCTS -->
+    <section data-view="products" class="hidden">
+      <h1 class="page">Products</h1>
+      <p class="sub">Changes show on the website the next time a visitor opens it.</p>
+      <div class="boxes">
+        <h2>Box sizes & prices</h2>
+        <p class="cs" style="margin:0;color:var(--muted);font-size:13px">Customers choose one of these sizes. Leave the price empty to hide it.</p>
+        <div id="boxRows"></div>
+        <div class="row" style="margin-top:12px"><button class="btn btn-line" type="button" id="addBox">Add a size</button><button class="btn btn-dark" type="button" id="saveBoxes">Save sizes & prices</button><span class="saved" id="boxSaved"></span></div>
+      </div>
+      <div class="row" style="margin-bottom:14px" id="importRow"></div>
+      <div class="plist" id="plist"></div>
+    </section>
+  </main>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="config.js"></script>
+<script src="data.js"></script>
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  var toastT; function toast(m){ var t = $('toast'); t.textContent = m; t.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(function(){ t.classList.remove('on'); }, 2200); }
+  var CUR = CG.currency, days = 30, orders = [], visits = [], products = [], settings = null, statusFilter = 'all', refreshT;
+  var IMG = { '1':'strawberry','2':'milk','3':'caramel-cashew','4':'dulce','5':'hazelnut','6':'coffee','7':'passionfruit','8':'pistachio','9':'almond','10':'pistachio-gianduja','11':'coconut' };
+  function photo(p){ return p.photo_url || (IMG[p.id] ? 'img/' + IMG[p.id] + '.webp' : ''); }
+  function money(n){ return n == null ? '—' : CUR + ' ' + Number(n).toLocaleString('en'); }
+  function dayKey(d){ var x = new Date(d); return x.getFullYear() + '-' + String(x.getMonth() + 1).padStart(2, '0') + '-' + String(x.getDate()).padStart(2, '0'); }
+  function fmtDay(k){ var p = k.split('-'); return new Date(+p[0], +p[1] - 1, +p[2]).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }); }
+  function fmtTime(d){ return new Date(d).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }); }
+  function priceFor(o){ if (o.total != null) return Number(o.total); var b = settings && settings.boxes.find(function(x){ return Number(x.size) === Number(o.box_size); }); return b && b.price != null && b.price !== '' ? Number(b.price) : null; }
+
+  /* ---------------- charts (plain SVG, hover + keyboard tooltips, table view) ---------------- */
+  var COLOR = '#9a6428', GRID = '#ece4da', AXIS = '#7a6a5e';
+  function mkTip(host){ var t = document.createElement('div'); t.className = 'tip'; host.appendChild(t); return t; }
+  function showTip(tip, x, y, val, lab){ tip.textContent = ''; var b = document.createElement('b'); b.textContent = val; tip.appendChild(b); tip.appendChild(document.createTextNode(lab)); tip.style.left = x + 'px'; tip.style.top = y + 'px'; tip.classList.add('on'); }
+  function tableView(host, rows, h1, h2){
+    var d = document.createElement('details'); d.className = 'tbl';
+    var s = document.createElement('summary'); s.textContent = 'Show as table'; d.appendChild(s);
+    var t = document.createElement('table'), hr = t.insertRow(); [h1, h2].forEach(function(h){ var th = document.createElement('th'); th.textContent = h; hr.appendChild(th); });
+    rows.forEach(function(r){ var tr = t.insertRow(); tr.insertCell().textContent = r[0]; tr.insertCell().textContent = r[1]; });
+    d.appendChild(t); host.appendChild(d);
+  }
+  function niceMax(m){ if (m <= 4) return Math.max(1, Math.ceil(m)); var p = Math.pow(10, Math.floor(Math.log10(m))), n = m / p; return (n <= 2 ? 2 : n <= 5 ? 5 : 10) * p; }
+  function columns(host, data, unit, line){
+    host.textContent = '';
+    if (!data.length || data.every(function(d){ return !d.v; })) { host.innerHTML = '<p class="empty">Nothing yet in this period.</p>'; return; }
+    var W = 560, H = 220, L = 34, B = 26, T = 10, R = 6, iw = W - L - R, ih = H - T - B, n = data.length;
+    var max = niceMax(Math.max.apply(null, data.map(function(d){ return d.v; }))), bw = iw / n;
+    var ns = 'http://www.w3.org/2000/svg', svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H); svg.setAttribute('role', 'img');
+    svg.setAttribute('aria-label', (line ? 'Line' : 'Bar') + ' chart, ' + n + ' days');
+    function el(tag, a){ var e = document.createElementNS(ns, tag); for (var k in a) e.setAttribute(k, a[k]); svg.appendChild(e); return e; }
+    [0, .5, 1].forEach(function(f){ var y = T + ih - ih * f; el('line', { x1: L, x2: W - R, y1: y, y2: y, stroke: GRID, 'stroke-width': 1 }); var tx = el('text', { x: L - 6, y: y + 4, 'text-anchor': 'end', 'font-size': 11, fill: AXIS }); tx.textContent = (max * f).toLocaleString('en'); });
+    var step = Math.max(1, Math.ceil(n / 7));
+    data.forEach(function(d, i){ if (i % step && i !== n - 1) return; var tx = el('text', { x: L + bw * i + bw / 2, y: H - 8, 'text-anchor': 'middle', 'font-size': 11, fill: AXIS }); tx.textContent = d.l; });
+    var tip = mkTip(host);
+    if (line) {
+      var pts = data.map(function(d, i){ return [L + bw * i + bw / 2, T + ih - ih * d.v / max]; });
+      el('path', { d: 'M' + pts.map(function(p){ return p[0].toFixed(1) + ' ' + p[1].toFixed(1); }).join(' L'), fill: 'none', stroke: COLOR, 'stroke-width': 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' });
+      var hair = el('line', { y1: T, y2: T + ih, stroke: AXIS, 'stroke-width': 1, opacity: 0 });
+      var dot = el('circle', { r: 5, fill: COLOR, stroke: '#fffdfa', 'stroke-width': 2, opacity: 0 });
+      var hit = el('rect', { x: L, y: T, width: iw, height: ih, fill: 'transparent', tabindex: 0 });
+      function at(i){ var p = pts[i], r = svg.getBoundingClientRect(), s = r.width / W; hair.setAttribute('x1', p[0]); hair.setAttribute('x2', p[0]); hair.setAttribute('opacity', .5); dot.setAttribute('cx', p[0]); dot.setAttribute('cy', p[1]); dot.setAttribute('opacity', 1); showTip(tip, p[0] * s, p[1] * s, data[i].v.toLocaleString('en') + ' ' + unit, data[i].full || data[i].l); }
+      hit.addEventListener('pointermove', function(e){ var r = svg.getBoundingClientRect(), x = (e.clientX - r.left) / (r.width / W); at(Math.max(0, Math.min(n - 1, Math.round((x - L - bw / 2) / bw)))); });
+      hit.addEventListener('pointerleave', function(){ tip.classList.remove('on'); hair.setAttribute('opacity', 0); dot.setAttribute('opacity', 0); });
+      var ki = n - 1; hit.addEventListener('focus', function(){ at(ki); });
+      hit.addEventListener('keydown', function(e){ if (e.key === 'ArrowLeft') { ki = Math.max(0, ki - 1); at(ki); e.preventDefault(); } if (e.key === 'ArrowRight') { ki = Math.min(n - 1, ki + 1); at(ki); e.preventDefault(); } });
+      hit.addEventListener('blur', function(){ tip.classList.remove('on'); });
+    } else {
+      var gap = Math.min(2, bw * .2);
+      data.forEach(function(d, i){
+        var h = ih * d.v / max, x = L + bw * i + gap / 2, w = Math.max(1, bw - gap), y = T + ih - h, r = Math.min(4, w / 2, h);
+        if (h > 0) el('path', { d: 'M' + x + ' ' + (T + ih) + ' V' + (y + r) + ' Q' + x + ' ' + y + ' ' + (x + r) + ' ' + y + ' H' + (x + w - r) + ' Q' + (x + w) + ' ' + y + ' ' + (x + w) + ' ' + (y + r) + ' V' + (T + ih) + ' Z', fill: COLOR });
+        var hit = el('rect', { x: L + bw * i, y: T, width: bw, height: ih, fill: 'transparent', tabindex: 0, 'aria-label': (d.full || d.l) + ': ' + d.v + ' ' + unit });
+        function on(){ var s = svg.getBoundingClientRect().width / W; showTip(tip, (L + bw * i + bw / 2) * s, y * s, d.v.toLocaleString('en') + ' ' + unit, d.full || d.l); }
+        hit.addEventListener('pointerenter', on); hit.addEventListener('focus', on);
+        hit.addEventListener('pointerleave', function(){ tip.classList.remove('on'); }); hit.addEventListener('blur', function(){ tip.classList.remove('on'); });
+      });
+    }
+    host.insertBefore(svg, tip);
+    tableView(host, data.map(function(d){ return [d.full || d.l, d.v]; }), 'Day', unit);
+  }
+  function hbars(host, data, unit){
+    host.textContent = '';
+    if (!data.length) { host.innerHTML = '<p class="empty">Nothing yet in this period.</p>'; return; }
+    var max = Math.max.apply(null, data.map(function(d){ return d.v; })) || 1;
+    var box = document.createElement('div'); box.style.display = 'grid'; box.style.gap = '8px'; box.style.padding = '4px 0 6px';
+    data.forEach(function(d){
+      var row = document.createElement('div'); row.style.cssText = 'display:grid;grid-template-columns:minmax(0,190px) minmax(0,1fr) 44px;gap:10px;align-items:center;font-size:13px';
+      var lab = document.createElement('span'); lab.textContent = d.l; lab.style.cssText = 'overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#3a2f28';
+      var track = document.createElement('span'); track.style.cssText = 'height:14px;position:relative';
+      var bar = document.createElement('span'); bar.style.cssText = 'position:absolute;left:0;top:0;bottom:0;border-radius:0 4px 4px 0;background:' + (d.c || COLOR) + ';width:' + Math.max(1, d.v / max * 100) + '%';
+      track.appendChild(bar);
+      var val = document.createElement('span'); val.textContent = d.v.toLocaleString('en'); val.style.cssText = 'text-align:right;font-weight:700';
+      row.appendChild(lab); row.appendChild(track); row.appendChild(val); row.title = d.l + ': ' + d.v + ' ' + unit;
+      box.appendChild(row);
+    });
+    host.appendChild(box);
+  }
+
+  /* ---------------- overview ---------------- */
+  function renderOverview(){
+    var since = Date.now() - days * 864e5;
+    var os = orders.filter(function(o){ return Date.parse(o.created_at) >= since; });
+    var live = os.filter(function(o){ return o.status !== 'cancelled'; });
+    var vs = visits.filter(function(v){ return Date.parse(v.created_at) >= since; });
+    var rev = 0, priced = 0; live.forEach(function(o){ var p = priceFor(o); if (p != null) { rev += p; priced++; } });
+    var pieces = live.reduce(function(s, o){ return s + (o.items || []).reduce(function(a, x){ return a + (x.qty || 0); }, 0); }, 0);
+    var mob = vs.filter(function(v){ return v.device === 'mobile'; }).length;
+    var tiles = [
+      ['Orders', live.length.toLocaleString('en'), pieces.toLocaleString('en') + ' pieces'],
+      ['Sales', priced ? money(rev) : '—', priced ? (priced < live.length ? 'from ' + priced + ' priced orders' : 'all orders priced') : 'add box prices in Products'],
+      ['Website visits', vs.length.toLocaleString('en'), vs.length ? Math.round(mob / vs.length * 100) + '% on phones' : ''],
+      ['Visits → orders', vs.length ? (live.length / vs.length * 100).toFixed(1) + '%' : '—', 'share of visits that ordered']
+    ];
+    $('tiles').textContent = '';
+    tiles.forEach(function(t){ var d = document.createElement('div'); d.className = 'tile'; ['k', 'v', 's'].forEach(function(c, i){ var p = document.createElement('p'); p.className = c; p.textContent = t[i]; d.appendChild(p); }); $('tiles').appendChild(d); });
+    var keys = []; for (var i = days - 1; i >= 0; i--) keys.push(dayKey(Date.now() - i * 864e5));
+    var oc = {}, vc = {}; keys.forEach(function(k){ oc[k] = 0; vc[k] = 0; });
+    live.forEach(function(o){ var k = dayKey(o.created_at); if (k in oc) oc[k]++; });
+    vs.forEach(function(v){ var k = dayKey(v.created_at); if (k in vc) vc[k]++; });
+    columns($('chOrders'), keys.map(function(k){ return { l: fmtDay(k), full: fmtDay(k), v: oc[k] }; }), 'orders');
+    columns($('chVisits'), keys.map(function(k){ return { l: fmtDay(k), full: fmtDay(k), v: vc[k] }; }), 'visits', true);
+    var fl = {}; live.forEach(function(o){ (o.items || []).forEach(function(x){ var name = (products.find(function(p){ return p.id === String(x.id); }) || {}).name || x.name; fl[name] = (fl[name] || 0) + (x.qty || 0); }); });
+    hbars($('chTop'), Object.keys(fl).map(function(k){ return { l: k, v: fl[k] }; }).sort(function(a, b){ return b.v - a.v; }).slice(0, 8), 'pieces');
+    var sc = {}; os.forEach(function(o){ sc[o.status] = (sc[o.status] || 0) + 1; });
+    var SC = { new: '#1f5fae', preparing: '#b07a00', ready: '#6a3fa0', delivered: '#2d6a3e', cancelled: '#8a2a2a' };
+    hbars($('chStatus'), CG.statuses.filter(function(s){ return sc[s]; }).map(function(s){ return { l: s.charAt(0).toUpperCase() + s.slice(1), v: sc[s], c: SC[s] }; }), 'orders');
+  }
+
+  /* ---------------- orders ---------------- */
+  function renderStatusFilter(){
+    var opts = ['all'].concat(CG.statuses);
+    $('statusFilter').innerHTML = opts.map(function(s){ var n = s === 'all' ? orders.length : orders.filter(function(o){ return o.status === s; }).length;
+      return '<button type="button" data-st="' + s + '" aria-pressed="' + (s === statusFilter) + '">' + (s === 'all' ? 'All' : s.charAt(0).toUpperCase() + s.slice(1)) + ' (' + n + ')</button>'; }).join('');
+    var nn = orders.filter(function(o){ return o.status === 'new'; }).length;
+    $('newPill').textContent = nn; $('newPill').classList.toggle('hidden', !nn);
+  }
+  function renderOrders(){
+    renderStatusFilter();
+    var qs = $('search').value.trim().toLowerCase();
+    var list = orders.filter(function(o){ return (statusFilter === 'all' || o.status === statusFilter) && (!qs || (o.customer_name || '').toLowerCase().indexOf(qs) > -1 || (o.phone || '').indexOf(qs) > -1 || String(o.id).indexOf(qs) > -1); });
+    if (!list.length) { $('orderRows').innerHTML = '<tr><td colspan="6" class="empty">No orders here yet.</td></tr>'; return; }
+    $('orderRows').innerHTML = list.slice(0, 300).map(function(o){
+      var phone = String(o.phone || '').replace(/[^\d+]/g, ''), wa = phone.replace(/^\+/, '').replace(/^0/, '20');
+      return '<tr><td><b>#' + esc(o.id) + '</b><br><span style="color:var(--muted);font-size:13px">' + esc(fmtTime(o.created_at)) + '</span></td>' +
+        '<td class="cust"><b>' + esc(o.customer_name) + '</b><span>' + esc(o.phone) + '</span><br><a class="wa" href="https://wa.me/' + esc(wa) + '" target="_blank" rel="noopener">WhatsApp</a></td>' +
+        '<td><b>Box of ' + esc(o.box_size) + '</b><ul class="items">' + (o.items || []).map(function(x){ return '<li>' + esc(x.qty) + ' × ' + esc(x.name) + '</li>'; }).join('') + '</ul></td>' +
+        '<td style="max-width:240px;font-size:14px">' + esc(o.address || '—') + (o.notes ? '<br><span style="color:var(--muted)">“' + esc(o.notes) + '”</span>' : '') + '</td>' +
+        '<td>' + esc(money(priceFor(o))) + '</td>' +
+        '<td><span class="badge st-' + esc(o.status) + '">' + esc(o.status) + '</span><br><select class="status" data-id="' + esc(o.id) + '" aria-label="Change status of order ' + esc(o.id) + '">' +
+          CG.statuses.map(function(s){ return '<option value="' + s + '"' + (s === o.status ? ' selected' : '') + '>' + s.charAt(0).toUpperCase() + s.slice(1) + '</option>'; }).join('') + '</select></td></tr>';
+    }).join('');
+  }
+
+  /* ---------------- products ---------------- */
+  function renderBoxes(){
+    var b = settings.boxes;
+    $('boxRows').innerHTML = b.map(function(x, i){ return '<div class="box-row" data-i="' + i + '"><label>Pieces<input type="number" min="1" max="60" step="1" value="' + esc(x.size) + '" data-f="size"></label><label>Price (' + esc(CUR) + ')<input type="number" min="0" step="1" value="' + esc(x.price == null ? '' : x.price) + '" data-f="price" placeholder="e.g. 450"></label><button type="button" class="icon-btn" data-delbox="' + i + '" aria-label="Remove this size">✕</button></div>'; }).join('');
+  }
+  function readBoxes(){
+    return [].map.call($('boxRows').querySelectorAll('.box-row'), function(r){ var s = r.querySelector('[data-f=size]').value, p = r.querySelector('[data-f=price]').value; return { size: Math.max(1, Math.min(60, parseInt(s, 10) || 0)), price: p === '' ? null : Math.max(0, Number(p)) }; }).filter(function(x){ return x.size > 0; });
+  }
+  function renderProducts(){
+    $('importRow').innerHTML = products.length ? '' : '<p style="margin:0">No products in the database yet.</p><button class="btn btn-dark" type="button" id="importBtn">Add the 11 bonbons from the website</button>';
+    $('plist').innerHTML = products.map(function(p){
+      return '<form class="prod" data-id="' + esc(p.id) + '">' +
+        '<div class="prod-top"><img src="' + esc(photo(p)) + '" alt=""><div style="min-width:0;flex:1"><label>Name<input type="text" name="name" maxlength="80" value="' + esc(p.name) + '" required></label></div></div>' +
+        '<label>Type<input type="text" name="type" maxlength="40" value="' + esc(p.type) + '"></label>' +
+        '<label>Description<textarea name="description" maxlength="400">' + esc(p.description) + '</textarea></label>' +
+        '<div class="toggles"><label><input type="checkbox" name="in_stock"' + (p.in_stock !== false ? ' checked' : '') + '>In stock</label><label><input type="checkbox" name="visible"' + (p.visible !== false ? ' checked' : '') + '>Show on website</label><label style="gap:6px">Order<input type="number" name="sort" value="' + esc(p.sort) + '" style="width:70px"></label></div>' +
+        '<div class="prod-actions"><button class="btn btn-dark" type="submit">Save</button><span class="btn btn-line file">Change photo<input type="file" accept="image/jpeg,image/png,image/webp" data-photo="' + esc(p.id) + '" aria-label="Change photo of ' + esc(p.name) + '"></span><span class="saved" aria-live="polite"></span></div>' +
+      '</form>';
+    }).join('');
+  }
+
+  /* ---------------- load + events ---------------- */
+  function loadAll(quiet){
+    return Promise.all([CG.listOrders(Math.max(days, 90)), CG.listVisits(Math.max(days, 90)), CG.listProducts(), CG.getSettings()]).then(function(r){
+      orders = r[0] || []; visits = r[1] || []; products = r[2] || []; settings = r[3] || { boxes: [] };
+      renderOverview(); renderOrders(); if (!quiet) { renderProducts(); renderBoxes(); }
+    }).catch(function(e){ toast('Could not load data: ' + (e.message || e)); });
+  }
+  function showTab(name){
+    document.querySelectorAll('.tab').forEach(function(t){ t.setAttribute('aria-selected', t.getAttribute('data-tab') === name ? 'true' : 'false'); });
+    document.querySelectorAll('[data-view]').forEach(function(v){ v.classList.toggle('hidden', v.getAttribute('data-view') !== name); });
+    try { history.replaceState(null, '', '#' + name); } catch (e) {}
+  }
+  document.querySelector('.tabs').addEventListener('click', function(e){ var t = e.target.closest('[data-tab]'); if (t) showTab(t.getAttribute('data-tab')); });
+  $('range').addEventListener('click', function(e){ var b = e.target.closest('[data-days]'); if (!b) return; days = +b.getAttribute('data-days'); [].forEach.call(this.children, function(c){ c.setAttribute('aria-pressed', c === b ? 'true' : 'false'); }); loadAll(true); });
+  $('statusFilter').addEventListener('click', function(e){ var b = e.target.closest('[data-st]'); if (!b) return; statusFilter = b.getAttribute('data-st'); renderOrders(); });
+  $('search').addEventListener('input', renderOrders);
+  $('orderRows').addEventListener('change', function(e){
+    var s = e.target.closest('select.status'); if (!s) return;
+    var id = Number(s.getAttribute('data-id')), st = s.value;
+    CG.updateOrderStatus(id, st).then(function(){ orders.forEach(function(o){ if (o.id === id) o.status = st; }); renderOrders(); renderOverview(); toast('Order #' + id + ' is now ' + st); }).catch(function(err){ toast('Could not update: ' + (err.message || err)); });
+  });
+  $('plist').addEventListener('submit', function(e){
+    e.preventDefault(); var f = e.target, id = f.getAttribute('data-id'), p = products.find(function(x){ return x.id === id; }) || { id: id };
+    var el = f.elements, upd = Object.assign({}, p, { name: el.name.value, type: el.type.value, description: el.description.value, in_stock: el.in_stock.checked, visible: el.visible.checked, sort: el.sort.value });
+    if (!upd.name.trim()) { toast('Please give the product a name'); return; }
+    var msg = f.querySelector('.saved'); msg.textContent = 'Saving…';
+    CG.saveProduct(upd).then(function(row){ Object.assign(p, row); msg.textContent = 'Saved'; setTimeout(function(){ msg.textContent = ''; }, 2000); }).catch(function(err){ msg.textContent = ''; toast('Could not save: ' + (err.message || err)); });
+  });
+  $('plist').addEventListener('change', function(e){
+    var inp = e.target.closest('[data-photo]'); if (!inp || !inp.files[0]) return;
+    var id = inp.getAttribute('data-photo'), p = products.find(function(x){ return x.id === id; }), f = inp.closest('form'), msg = f.querySelector('.saved');
+    msg.textContent = 'Uploading…';
+    CG.uploadPhoto(inp.files[0], id).then(function(url){ p.photo_url = url; return CG.saveProduct(p); }).then(function(){ f.querySelector('img').src = p.photo_url; msg.textContent = 'Photo updated'; setTimeout(function(){ msg.textContent = ''; }, 2500); })
+      .catch(function(err){ msg.textContent = ''; toast(err.message || 'Upload failed'); });
+  });
+  document.addEventListener('click', function(e){
+    if (e.target.id === 'importBtn') CG.importDefaultProducts().then(function(){ toast('Bonbons added'); loadAll(); }).catch(function(err){ toast('Could not add: ' + (err.message || err)); });
+    var d = e.target.closest('[data-delbox]'); if (d) { settings.boxes = readBoxes(); settings.boxes.splice(+d.getAttribute('data-delbox'), 1); renderBoxes(); }
+  });
+  $('addBox').addEventListener('click', function(){ settings.boxes = readBoxes(); settings.boxes.push({ size: 12, price: null }); renderBoxes(); });
+  $('saveBoxes').addEventListener('click', function(){
+    var b = readBoxes(); if (!b.length) { toast('Keep at least one box size'); return; }
+    CG.saveSettings(Object.assign({}, settings, { boxes: b })).then(function(v){ settings = v; $('boxSaved').textContent = 'Saved'; setTimeout(function(){ $('boxSaved').textContent = ''; }, 2000); renderOverview(); renderOrders(); }).catch(function(err){ toast('Could not save: ' + (err.message || err)); });
+  });
+  $('seedDemo').addEventListener('click', function(){ CG.seedDemo().then(function(){ toast('Sample data added'); loadAll(); }); });
+  $('clearDemo').addEventListener('click', function(){ CG.clearDemo().then(function(){ toast('Demo data cleared'); loadAll(); }); });
+  $('signOut').addEventListener('click', function(){ CG.signOut().then(function(){ location.reload(); }); });
+
+  function startApp(){
+    $('loginView').classList.add('hidden'); $('appView').classList.remove('hidden');
+    if (!CG.live) { $('demoBar').classList.remove('hidden'); $('signOut').classList.add('hidden'); }
+    var h = location.hash.replace('#', ''); if (['overview', 'orders', 'products'].indexOf(h) > -1) showTab(h);
+    loadAll();
+    clearInterval(refreshT); refreshT = setInterval(function(){ if (!document.hidden) loadAll(true); }, 30000);
+  }
+  $('loginForm').addEventListener('submit', function(e){
+    e.preventDefault(); var el = e.target.elements; $('loginErr').textContent = '';
+    CG.signIn(el.email.value.trim(), el.password.value).then(function(){ return CG.isAdmin(); }).then(function(ok){
+      if (!ok) { $('loginErr').textContent = 'This account is not an admin for the shop.'; return CG.signOut(); }
+      startApp();
+    }).catch(function(err){ $('loginErr').textContent = err.message === 'Invalid login credentials' ? 'Wrong email or password.' : (err.message || 'Could not sign in.'); });
+  });
+  CG.session().then(function(s){
+    if (!s) { $('loginView').classList.remove('hidden'); return; }
+    return CG.isAdmin().then(function(ok){ if (ok) startApp(); else { $('loginView').classList.remove('hidden'); } });
+  }).catch(function(){ $('loginView').classList.remove('hidden'); });
+})();
+</script>
+</body>
+</html>

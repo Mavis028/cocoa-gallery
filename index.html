@@ -18,6 +18,7 @@
   --ease:cubic-bezier(.2,.7,.2,1);
 }
 *{box-sizing:border-box}
+[hidden]{display:none !important}
 html{scroll-behavior:smooth}
 body{margin:0;background:var(--ink);color:var(--cream);font-family:var(--sans);overflow-x:hidden;-webkit-font-smoothing:antialiased}
 a{color:var(--gold)}a:hover{color:#f3d6a6}
@@ -222,6 +223,19 @@ button{font:inherit}
 .bar{margin-top:14px;height:6px;border-radius:999px;background:var(--line);overflow:hidden}
 .bar>div{height:100%;width:0;background:var(--gold);transition:width .4s var(--ease)}
 .hint{margin:14px 0 18px;font-size:14px;color:#4d443c;text-align:center}
+.order-form{margin-top:18px;display:flex;flex-direction:column;gap:12px}
+.order-form label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:700;color:#3a2f28}
+.order-form .opt{font-weight:400;color:#6b5d52}
+.order-form input,.order-form textarea{font:inherit;font-weight:400;font-size:16px;padding:12px 14px;border-radius:10px;border:1px solid #cdbfb1;background:#fffdfa;color:var(--ink);min-height:48px}
+.order-form textarea{resize:vertical;min-height:64px}
+.order-form input:focus,.order-form textarea:focus{outline:2px solid var(--gold-dark);outline-offset:1px;border-color:var(--gold-dark)}
+.of-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:520px){.of-row{grid-template-columns:minmax(0,1fr)}}
+.of-error{margin:0;min-height:18px;color:#a3241f;font-size:14px;font-weight:700}
+.order-done{margin-top:18px;padding:22px;border-radius:12px;background:#fffdfa;border:1px solid #d6cbbf;text-align:center}
+.od-title{margin:0 0 6px;font-family:var(--serif);font-size:24px}
+.od-text{margin:0 0 16px;color:#4d443c;font-size:15px}
+.od-new{margin-top:12px;color:#4d443c;border-color:#cdbfb1}
 .summary{margin:16px 0 0;font-size:14px;color:#4d443c;text-align:center;min-height:20px}
 
 /* VISIT */
@@ -403,12 +417,28 @@ footer{border-top:1px solid #241f1b;padding:36px 0}
             </div>
             <div class="bar"><div id="bar"></div></div>
           </div>
-          <p class="hint">Tap a piece in the box to remove it. Price: [BOX PRICE]</p>
-          <a class="btn btn-dark" id="orderBtn" href="#" target="_blank" rel="noopener">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 0 1-13.5 7.8L3 21l1.2-4.5A9 9 0 1 1 21 12z"/></svg>
-            <span id="orderLabel">Order on WhatsApp</span>
-          </a>
+          <p class="hint">Tap a piece in the box to remove it. <span id="boxPrice"></span></p>
           <p class="summary" id="summary"></p>
+          <form class="order-form" id="orderForm" novalidate>
+            <h3 class="step" style="margin-top:4px">3. Your details</h3>
+            <div class="of-row">
+              <label>Name<input name="cname" autocomplete="name" required maxlength="80"></label>
+              <label>Phone<input name="phone" type="tel" autocomplete="tel" inputmode="tel" required maxlength="20" placeholder="01xxxxxxxxx"></label>
+            </div>
+            <label>Delivery address<input name="address" autocomplete="street-address" maxlength="300" placeholder="Area, street, building"></label>
+            <label>Note <span class="opt">(optional)</span><textarea name="notes" rows="2" maxlength="500" placeholder="Gift message, delivery time…"></textarea></label>
+            <p class="of-error" id="ofError" role="alert"></p>
+            <button class="btn btn-dark" id="orderBtn" type="submit">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 0 1-13.5 7.8L3 21l1.2-4.5A9 9 0 1 1 21 12z"/></svg>
+              <span id="orderLabel">Place order</span>
+            </button>
+          </form>
+          <div class="order-done" id="orderDone" hidden>
+            <p class="od-title">Order <b id="odNo"></b> received — thank you!</p>
+            <p class="od-text">Tap below to send it to us on WhatsApp so we can confirm and arrange delivery.</p>
+            <a class="btn btn-dark" id="odWa" href="#" target="_blank" rel="noopener">Send on WhatsApp</a>
+            <button type="button" class="clear od-new" id="odNew">Make another box</button>
+          </div>
         </div>
       </div>
     </div>
@@ -460,10 +490,12 @@ footer{border-top:1px solid #241f1b;padding:36px 0}
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+<script src="config.js"></script>
+<script src="data.js"></script>
 <script>
-(function(){
-  /* ====== EDIT YOUR PRODUCTS HERE ====== */
-  var WHATSAPP = '201055971533';
+function cgMain(remote){
+  /* ====== EDIT YOUR PRODUCTS HERE (the dashboard can override names, text, stock and photos) ====== */
+  var WHATSAPP = (window.CG && CG.whatsapp) || '201055971533';
   var SIZES = [8, 16, 24];   // the box in the photos holds 8 — change if they sell other sizes
   var NONE = 'linear-gradient(transparent, transparent)';
   var SPECK = 'radial-gradient(circle at 30% 60%, rgba(255,255,255,.7) 0 3%, transparent 4%), radial-gradient(circle at 62% 38%, rgba(255,255,255,.6) 0 2.5%, transparent 3.5%), radial-gradient(circle at 58% 74%, rgba(255,255,255,.6) 0 2%, transparent 3%)';
@@ -481,6 +513,21 @@ footer{border-top:1px solid #241f1b;padding:36px 0}
     { id:11, name:'Coconut vanilla',                     note:'Ganache',  img:'img/coconut.webp',            base:'#dcd8d2', pattern:NONE, cut:'img/cut/coconut.webp', bg:'#2e2b27', blob:'#7d7568', desc:'Coconut and vanilla in a pearl-white shell.' }
   ];
   /* ===================================== */
+  var PRICES = {};
+  if (remote && remote.settings && Array.isArray(remote.settings.boxes) && remote.settings.boxes.length) {
+    SIZES = remote.settings.boxes.map(function(x){ return Number(x.size); }).filter(function(n){ return n > 0 && n <= 60; });
+    remote.settings.boxes.forEach(function(x){ if (x.price != null && x.price !== '') PRICES[x.size] = Number(x.price); });
+  }
+  if (remote && Array.isArray(remote.products) && remote.products.length) {
+    var P = {}; remote.products.forEach(function(p){ P[String(p.id)] = p; });
+    BONBONS = BONBONS.filter(function(b){ var p = P[String(b.id)]; return !p || p.visible !== false; }).map(function(b){
+      var p = P[String(b.id)]; if (!p) return b;
+      var o = Object.assign({}, b, { name: p.name || b.name, note: p.type || b.note, desc: p.description || b.desc, inStock: p.in_stock !== false, sort: p.sort });
+      if (p.photo_url) { o.img = p.photo_url; o.cut = p.photo_url; }
+      return o;
+    }).sort(function(a, b){ return (a.sort == null ? a.id : a.sort) - (b.sort == null ? b.id : b.sort); });
+  }
+  var CUR = (window.CG && CG.currency) || 'EGP';
 
   var byId = {}; BONBONS.forEach(function(b){ byId[b.id] = b; });
   var $ = function(id){ return document.getElementById(id); };
@@ -501,14 +548,14 @@ footer{border-top:1px solid #241f1b;padding:36px 0}
   $('gallery').innerHTML = BONBONS.map(function(b, i){
     return '<article class="frame reveal">' +
       '<div class="photo"><img src="' + b.img + '" alt="' + esc(b.name) + '" loading="lazy" width="380" height="380">' +
-      (b.popular ? '<span class="badge">Popular</span>' : '') + '</div>' +
+      (b.inStock === false ? '<span class="badge">Sold out</span>' : b.popular ? '<span class="badge">Popular</span>' : '') + '</div>' +
       '<div class="label"><div><p class="no">No. ' + String(i + 1).padStart(2, '0') + '</p><h3>' + esc(b.name) + '</h3><p class="note">' + esc(b.note) + '</p></div>' +
       '<button class="plus" type="button" data-add="' + b.id + '" aria-label="Add ' + esc(b.name) + ' to your box">' + plusIcon + '</button></div>' +
     '</article>';
   }).join('');
 
   $('picks').innerHTML = BONBONS.map(function(b){
-    return '<button class="pick" type="button" data-add="' + b.id + '" aria-label="Add ' + esc(b.name) + '"><img class="thumb" src="' + b.img + '" alt="" loading="lazy" width="72" height="72"><span class="n">' + esc(b.name) + '</span></button>';
+    return '<button class="pick" type="button" data-add="' + b.id + '"' + (b.inStock === false ? ' disabled' : '') + ' aria-label="Add ' + esc(b.name) + (b.inStock === false ? ' (sold out)' : '') + '"><img class="thumb" src="' + b.img + '" alt="" loading="lazy" width="72" height="72"><span class="n">' + esc(b.name) + '</span></button>';
   }).join('');
 
   /* state */
@@ -541,15 +588,16 @@ footer{border-top:1px solid #241f1b;padding:36px 0}
     state.picks.forEach(function(id){ if (!counts[id]) { counts[id] = 0; order.push(id); } counts[id]++; });
     var lines = order.map(function(id){ return byId[id].name + ' x' + counts[id]; });
     var msg = 'Hello Cocoa Gallery! I would like to order a box of ' + n + (lines.length ? ':\n- ' + lines.join('\n- ') : '.');
-    $('orderBtn').href = 'https://wa.me/' + WHATSAPP + '?text=' + encodeURIComponent(msg);
     var full = c === n;
-    $('orderLabel').textContent = full ? 'Order this box on WhatsApp' : 'Order on WhatsApp (' + c + '/' + n + ')';
+    $('orderLabel').textContent = full ? 'Place order' : 'Place order (' + c + '/' + n + ' pieces)';
     $('orderBtn').setAttribute('aria-disabled', c === 0 ? 'true' : 'false');
+    $('boxPrice').textContent = PRICES[n] != null ? 'Box of ' + n + ': ' + CUR + ' ' + PRICES[n].toLocaleString('en') : '';
     $('summary').textContent = lines.length ? lines.join(' · ') : '';
   }
 
   function add(id){
     var b = byId[id]; if (!b) return;
+    if (b.inStock === false) { toast(b.name + ' is sold out right now'); return; }
     if (state.picks.length >= state.size) { toast('Your box is full — remove a piece or pick a bigger box'); return; }
     state.picks.push(id); save();
     renderBox(state.picks.length - 1);
@@ -563,7 +611,33 @@ footer{border-top:1px solid #241f1b;padding:36px 0}
     var s = e.target.closest('[data-size]'); if (s) { state.size = Number(s.getAttribute('data-size')); state.picks = state.picks.slice(0, state.size); save(); renderSizes(); renderBox(); return; }
   });
   $('clear').addEventListener('click', function(){ state.picks = []; save(); renderBox(); });
-  $('orderBtn').addEventListener('click', function(e){ if (state.picks.length === 0) { e.preventDefault(); toast('Add some bonbons to your box first'); } });
+  var sending = false;
+  $('orderForm').addEventListener('submit', function(e){
+    e.preventDefault(); if (sending) return;
+    var f = e.target, err = $('ofError'); err.textContent = '';
+    var el = f.elements, name = el.cname.value.trim(), phone = el.phone.value.replace(/[^\d+]/g, ''), address = el.address.value.trim(), notes = el.notes.value.trim();
+    if (state.picks.length === 0) { err.textContent = 'Add some bonbons to your box first.'; return; }
+    if (!name) { err.textContent = 'Please enter your name.'; el.cname.focus(); return; }
+    if (phone.length < 8) { err.textContent = 'Please enter a phone number we can reach you on.'; el.phone.focus(); return; }
+    var counts = {}, order = [];
+    state.picks.forEach(function(id){ if (!counts[id]) { counts[id] = 0; order.push(id); } counts[id]++; });
+    var items = order.map(function(id){ return { id: String(id), name: byId[id].name, qty: counts[id] }; });
+    var total = PRICES[state.size] != null ? PRICES[state.size] : null;
+    sending = true; $('orderLabel').textContent = 'Sending…';
+    var saveOrder = window.CG ? CG.createOrder({ customer_name: name, phone: phone, address: address, notes: notes, box_size: state.size, items: items, total: total }) : Promise.resolve({});
+    saveOrder.catch(function(){ return {}; }).then(function(row){
+      var no = row && row.id ? '#' + row.id : '';
+      var msg = 'Hello Cocoa Gallery! ' + (no ? 'Order ' + no + ' — ' : '') + 'I would like a box of ' + state.size + ':\n- ' +
+        items.map(function(x){ return x.name + ' x' + x.qty; }).join('\n- ') +
+        (total != null ? '\nTotal: ' + CUR + ' ' + total : '') + '\n\nName: ' + name + '\nPhone: ' + phone + (address ? '\nAddress: ' + address : '') + (notes ? '\nNote: ' + notes : '');
+      $('odNo').textContent = no || '';
+      $('odWa').href = 'https://wa.me/' + WHATSAPP + '?text=' + encodeURIComponent(msg);
+      f.hidden = true; $('orderDone').hidden = false;
+      state.picks = []; save(); renderBox();
+      sending = false;
+    });
+  });
+  $('odNew').addEventListener('click', function(){ $('orderDone').hidden = true; $('orderForm').hidden = false; $('orderForm').reset(); renderBox(); });
 
   /* mobile menu */
   var burger = $('burger'), menu = $('menu');
@@ -747,6 +821,15 @@ footer{border-top:1px solid #241f1b;padding:36px 0}
   })();
 
   renderSizes(); renderBox();
+}
+(function(){
+  var started = false;
+  function go(r){ if (started) return; started = true; cgMain(r); }
+  if (!window.CG) return go(null);
+  CG.withTimeout(Promise.all([CG.listProducts(), CG.getSettings()]), 2500)
+    .then(function(r){ go({ products: r[0], settings: r[1] }); })
+    .catch(function(){ go(null); });
+  CG.logVisit();
 })();
 </script>
 </body>
