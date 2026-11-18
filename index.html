@@ -56,61 +56,57 @@ button{font:inherit}
   .menu .order{margin-top:16px;justify-content:center;min-height:52px;border-bottom:0}
 }
 
-/* SHOWCASE (scroll-driven hero) */
-.show{position:relative}
-.pin{position:sticky;top:76px;height:calc(100vh - 76px);height:calc(100svh - 76px);contain:layout paint;min-height:560px;overflow:hidden;background:var(--bg,#3a0f12);transition:background-color .5s ease}
-.pin::before{content:"";position:absolute;right:-12vw;top:-20vh;width:62vw;height:140vh;border-radius:44% 56% 38% 62% / 52% 40% 60% 48%;background:var(--blob,#7a1a20);transition:background-color .5s ease,transform .9s var(--ease);transform:rotate(var(--blobRot,0deg));will-change:transform}
-.pin-in{position:relative;z-index:1;height:100%;max-width:1280px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);align-items:center;gap:24px}
-.s-copy{max-width:520px}
-.s-brand{margin:0 0 26px;display:flex;align-items:center;gap:12px;font-size:11px;letter-spacing:3px;white-space:nowrap;text-transform:uppercase;font-weight:700;color:rgba(255,255,255,.75)}
-.s-brand::before{content:"";width:40px;height:1px;background:currentColor}
-.s-count{font-family:var(--serif);font-size:20px;color:rgba(255,255,255,.7);margin:0 0 10px}
-.s-count b{font-weight:700;color:#fff;font-size:28px}
-.s-text{transition:opacity .35s ease,transform .45s var(--ease)}
-.s-text.out{opacity:0;transform:translateY(-24px)}
-.s-text.pre{opacity:0;transform:translateY(28px);transition:none}
-.s-type{display:inline-block;margin:0 0 16px;padding:6px 14px;border-radius:999px;background:rgba(255,255,255,.14);color:#fff;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase}
-.s-name{margin:0;font-family:var(--serif);font-weight:400;font-size:clamp(40px,5.6vw,84px);line-height:1.02;letter-spacing:-.5px;color:#fff;min-height:2em}
-.s-desc{margin:20px 0 0;font-size:18px;line-height:1.65;color:rgba(255,255,255,.82);max-width:440px;min-height:3.3em}
-.s-cta{margin-top:30px;display:flex;flex-wrap:wrap;gap:12px}
+/* SHOWCASE (rings carousel) */
+.ring-hero{position:relative;height:calc(100vh - 76px);height:calc(100svh - 76px);min-height:600px;overflow:hidden;background:var(--bg,#a3241f);transition:background-color .7s ease;color:#fff;touch-action:pan-y}
+.rings{position:absolute;left:var(--cx,60%);top:50%;width:0;height:0;pointer-events:none}
+.rings i{position:absolute;border-radius:50%;left:50%;top:50%;transform:translate(-50%,-50%);transition:background-color .7s ease}
+.rings i:nth-child(1){width:calc(var(--RS) * 2.9);height:calc(var(--RS) * 2.9);background:var(--r1)}
+.rings i:nth-child(2){width:calc(var(--RS) * 2.2);height:calc(var(--RS) * 2.2);background:var(--r2)}
+.rings i:nth-child(3){width:calc(var(--RS) * 1.5);height:calc(var(--RS) * 1.5);background:var(--r3)}
+.rings i:nth-child(4){width:calc(var(--RS) * .98);height:calc(var(--RS) * .98);background:var(--r4)}
+.r-stage{position:absolute;left:var(--cx,60%);top:50%;width:0;height:0}
+.r-set{position:absolute;left:0;top:0;width:0;height:0;transition:transform 1s cubic-bezier(.65,0,.25,1),opacity .8s ease;will-change:transform,opacity}
+.r-set.enter{transform:rotate(-70deg) scale(.7);opacity:0;transition:none}
+.r-set.leave{transform:rotate(70deg) scale(1.25);opacity:0}
+.r-bonbon{position:absolute;width:var(--RS);height:var(--RS);left:calc(var(--RS) / -2);top:calc(var(--RS) / -2)}
+.r-bonbon img{width:100%;height:100%;display:block;filter:drop-shadow(0 30px 30px rgba(0,0,0,.35))}
+.r-ing{position:absolute;width:var(--IS);height:var(--IS);left:calc(var(--IS) / -2);top:calc(var(--IS) / -2)}
+.r-ing svg{width:100%;height:100%;display:block;filter:drop-shadow(0 10px 12px rgba(0,0,0,.25));animation:drift 6s ease-in-out infinite}
+@keyframes drift{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-8px) rotate(6deg)}}
+.r-copy{position:absolute;left:max(24px,calc((100% - 1280px) / 2 + 24px));top:50%;transform:translateY(-50%);width:min(380px,34vw);z-index:3}
+.r-kicker{margin:0 0 10px;font-size:12px;letter-spacing:3px;text-transform:uppercase;font-weight:700;opacity:.85}
+.r-name{margin:0;font-family:var(--serif);font-weight:400;font-style:italic;font-size:clamp(40px,4.6vw,68px);line-height:1;min-height:2em}
+.r-desc{margin:18px 0 0;font-size:16px;line-height:1.65;opacity:.9;min-height:4.9em}
+.r-text{transition:opacity .35s ease,transform .45s var(--ease)}
+.r-text.out{opacity:0;transform:translateY(-18px)}
+.r-text.pre{opacity:0;transform:translateY(22px);transition:none}
+.r-cta{margin-top:26px;display:flex;flex-wrap:wrap;gap:10px}
 .btn-white{background:#fff;color:var(--ink)}.btn-white:hover{color:var(--ink);background:#f4efe9}
-.btn-line{border-color:rgba(255,255,255,.45);color:#fff}.btn-line:hover{color:#fff;border-color:#fff}
-.thumbs{margin-top:34px;display:flex;flex-wrap:wrap;gap:8px}
-.thumb-b{width:46px;height:46px;border-radius:50%;padding:3px;border:2px solid transparent;background:rgba(255,255,255,.08);cursor:pointer;transition:border-color .3s,transform .3s}
-.thumb-b img{width:100%;height:100%;object-fit:contain;display:block}
-.thumb-b:hover{transform:translateY(-3px)}
-.thumb-b[aria-current="true"]{border-color:#fff;transform:scale(1.12)}
-.s-stage{position:relative;height:100%;min-height:480px}
-.halo{position:absolute;left:50%;top:50%;width:var(--S);height:var(--S);margin:calc(var(--S) / -2) 0 0 calc(var(--S) / -2);border-radius:50%;border:1px dashed rgba(255,255,255,.35);transform:scale(1.32)}
-.halo2{position:absolute;left:50%;top:50%;width:var(--S);height:var(--S);margin:calc(var(--S) / -2) 0 0 calc(var(--S) / -2);border-radius:50%;background:rgba(255,255,255,.08);transform:scale(1.12)}
-.wheel{position:absolute;left:50%;top:calc(50% + var(--R));width:0;height:0;will-change:transform}
-.w-item{position:absolute;width:var(--S);height:var(--S);left:calc(var(--S) / -2);top:calc(var(--S) / -2);transform:rotate(var(--a)) translateY(calc(var(--R) * -1));will-change:transform,opacity;opacity:0}
-.w-item img{width:100%;height:100%;object-fit:contain;display:block;backface-visibility:hidden}
-.s-shadow{position:absolute;left:50%;top:50%;width:calc(var(--S) * .8);height:calc(var(--S) * .14);margin-left:calc(var(--S) * -.4);margin-top:calc(var(--S) * .36);border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.45),transparent)}
-.s-hint{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);z-index:2;display:flex;flex-direction:column;align-items:center;gap:8px;font-size:12px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.7);transition:opacity .4s}
-.s-hint span{width:1px;height:34px;background:rgba(255,255,255,.6);animation:hint 1.8s ease-in-out infinite;transform-origin:top}
-.s-bar{position:absolute;left:0;bottom:0;height:3px;width:100%;background:#fff;z-index:2;transform:scaleX(0);transform-origin:left}
-.skip{position:absolute;left:24px;bottom:22px;z-index:2;color:rgba(255,255,255,.8);font-size:14px}
-.skip:hover{color:#fff}
-.show{--R:560px;--S:380px}
+.btn-line{border-color:rgba(255,255,255,.55);color:#fff}.btn-line:hover{color:#fff;border-color:#fff}
+.r-arrow{position:absolute;top:50%;z-index:4;width:52px;height:52px;margin-top:-26px;border-radius:50%;border:1px solid rgba(255,255,255,.55);background:rgba(255,255,255,.12);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s,transform .2s}
+.r-arrow:hover{background:rgba(255,255,255,.28);transform:scale(1.06)}
+.r-arrow{top:auto;bottom:12px;margin-top:0}
+.r-prev{left:calc(var(--cx,60%) - 175px)}
+.r-next{left:calc(var(--cx,60%) + 123px)}
+.r-dots{position:absolute;left:var(--cx,60%);bottom:33px;transform:translateX(-50%);z-index:4;display:flex;gap:8px;align-items:center}
+.r-dot{width:10px;height:10px;border-radius:999px;border:0;padding:0;background:rgba(255,255,255,.45);cursor:pointer;transition:width .3s,background .3s}
+.r-dot[aria-current="true"]{width:28px;background:#fff}
+.r-count{position:absolute;right:max(24px,calc((100% - 1280px) / 2 + 24px));top:28px;z-index:4;font-family:var(--serif);font-size:18px;opacity:.85}
+.r-count b{font-size:28px;font-weight:400}
+.ring-hero{--RS:340px;--IS:84px;--ORB:270px}
 @media (max-width:900px){
-  .show{--R:380px;--S:230px}
-  .pin-in{grid-template-columns:minmax(0,1fr);grid-template-rows:auto 1fr;align-content:start;padding-top:22px;gap:0}
-  .s-stage{order:-1;min-height:0;height:min(42vh,320px)}
-  .s-brand{display:none}
-  .s-name{font-size:clamp(32px,9vw,48px);min-height:0}
-  .s-desc{font-size:16px;margin-top:12px;min-height:0}
-  .s-cta{margin-top:18px}.s-cta .btn{min-height:48px;padding:0 22px}
-  .thumbs{margin-top:18px;gap:6px}.thumb-b{width:36px;height:36px}
-  .pin::before{right:-40vw;top:-30vh;width:120vw;height:80vh}
-  .s-hint{display:none}
-  .skip{display:none}
-  .s-stage{height:min(36vh,300px)}
-  .thumb-b{width:32px;height:32px;padding:2px}
+  .ring-hero{--RS:200px;--IS:52px;--ORB:160px;--cx:50%;min-height:640px}
+  .rings,.r-stage{top:31%}
+  .r-copy{left:20px;right:20px;width:auto;top:auto;bottom:64px;transform:none;text-align:center}
+  .r-name{font-size:clamp(32px,9vw,44px);min-height:0}
+  .r-desc{font-size:14px;min-height:4.4em;margin-top:10px}
+  .r-cta{justify-content:center;margin-top:16px}
+  .r-cta .btn{min-height:46px;padding:0 20px}
+  .r-prev,.r-next{top:31%;bottom:auto;width:44px;height:44px;margin-top:-22px}
+  .r-prev{left:10px}.r-next{left:auto;right:10px}
+  .r-dots{bottom:22px}
+  .r-count{top:16px}
 }
-@keyframes bob{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-14px) rotate(4deg)}}
-@keyframes hint{0%{transform:scaleY(0)}50%{transform:scaleY(1)}100%{transform:scaleY(0);transform-origin:bottom}}
-
 
 /* LAYERS (exploded bonbon) */
 .layers{position:relative;height:240vh;background:#f6e6df;color:var(--ink)}
@@ -280,38 +276,58 @@ footer{border-top:1px solid #241f1b;padding:36px 0}
 </header>
 
 <main id="top">
-  <!-- SHOWCASE: scroll to change the bonbon -->
-  <section class="show" id="show" aria-label="Our bonbons">
-    <div class="pin" id="pin">
-      <div class="pin-in">
-        <div class="s-copy">
-          <h1 class="s-brand">Cocoa Gallery · Sweetness that tells a story</h1>
-          <p class="s-count"><b id="sNo">01</b> / <span id="sTotal">11</span></p>
-          <div class="s-text" id="sText" aria-live="polite">
-            <p class="s-type" id="sType">Ganache</p>
-            <h2 class="s-name" id="sName">Strawberry ganache</h2>
-            <p class="s-desc" id="sDesc"></p>
-          </div>
-          <div class="s-cta">
-            <button type="button" class="btn btn-white" id="sAdd" data-add="1">Add to my box</button>
-            <a href="#box" class="btn btn-line">Create your own box</a>
-          </div>
-          <div class="thumbs" id="thumbs" role="group" aria-label="Choose a bonbon"></div>
-        </div>
-        <div class="s-stage" aria-hidden="true">
-          <div class="halo2"></div>
-          <div class="halo"></div>
-          <div class="s-shadow"></div>
-          <div class="wheel" id="wheel"></div>
-        </div>
+  <!-- SHOWCASE: rings carousel (arrows / swipe / auto-play) -->
+  <section class="ring-hero" id="show" aria-roledescription="carousel" aria-label="Our bonbons">
+    <div class="rings" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="r-stage" id="rStage" aria-hidden="true"></div>
+    <div class="r-copy">
+      <h1 class="r-kicker">Cocoa Gallery · <span id="rType">Ganache</span></h1>
+      <div class="r-text" id="rText" aria-live="polite">
+        <h2 class="r-name" id="rName">Strawberry ganache</h2>
+        <p class="r-desc" id="rDesc"></p>
       </div>
-      <div class="s-hint" id="sHint">Scroll<span></span></div>
-      <a href="#collection" class="skip">Skip to collection</a>
-      <div class="s-bar" id="sBar"></div>
+      <div class="r-cta">
+        <button type="button" class="btn btn-white" id="rAdd" data-add="1">Add to my box</button>
+        <a href="#box" class="btn btn-line">Create your own box</a>
+      </div>
     </div>
+    <p class="r-count" aria-hidden="true"><b id="rNo">01</b> / <span id="rTotal">11</span></p>
+    <button type="button" class="r-arrow r-prev" id="rPrev" aria-label="Previous bonbon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <button type="button" class="r-arrow r-next" id="rNext" aria-label="Next bonbon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg></button>
+    <div class="r-dots" id="rDots" role="group" aria-label="Choose a bonbon"></div>
   </section>
 
-  <!-- LAYERS: the bonbon opens as you scroll -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <radialGradient id="gStraw" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#ff6b5e"/><stop offset=".6" stop-color="#d91f26"/><stop offset="1" stop-color="#8e0d16"/></radialGradient>
+      <radialGradient id="gChoc" cx="35%" cy="30%" r="80%"><stop offset="0" stop-color="#7a4a32"/><stop offset="1" stop-color="#2e1811"/></radialGradient>
+      <radialGradient id="gCashew" cx="40%" cy="35%" r="75%"><stop offset="0" stop-color="#fbe9c8"/><stop offset=".7" stop-color="#e3be86"/><stop offset="1" stop-color="#b98a4e"/></radialGradient>
+      <radialGradient id="gCaramel" cx="38%" cy="32%" r="75%"><stop offset="0" stop-color="#ffd27a"/><stop offset=".6" stop-color="#d98b25"/><stop offset="1" stop-color="#8f4e12"/></radialGradient>
+      <radialGradient id="gHazel" cx="38%" cy="40%" r="70%"><stop offset="0" stop-color="#b8763f"/><stop offset=".7" stop-color="#7d4520"/><stop offset="1" stop-color="#4c260f"/></radialGradient>
+      <radialGradient id="gBean" cx="35%" cy="30%" r="80%"><stop offset="0" stop-color="#7b4a2d"/><stop offset=".7" stop-color="#3f2213"/><stop offset="1" stop-color="#1e0f08"/></radialGradient>
+      <radialGradient id="gPassRind" cx="40%" cy="35%" r="75%"><stop offset="0" stop-color="#8b4a8f"/><stop offset="1" stop-color="#3e1640"/></radialGradient>
+      <radialGradient id="gPassPulp" cx="50%" cy="50%" r="55%"><stop offset="0" stop-color="#ffd84d"/><stop offset="1" stop-color="#f29b12"/></radialGradient>
+      <radialGradient id="gPistShell" cx="40%" cy="35%" r="75%"><stop offset="0" stop-color="#f6ead2"/><stop offset="1" stop-color="#c9ad7d"/></radialGradient>
+      <radialGradient id="gPistNut" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#c3e07a"/><stop offset=".7" stop-color="#7da637"/><stop offset="1" stop-color="#7a4a5a"/></radialGradient>
+      <radialGradient id="gAlmond" cx="38%" cy="32%" r="75%"><stop offset="0" stop-color="#e0a26a"/><stop offset=".7" stop-color="#a8622e"/><stop offset="1" stop-color="#6b3815"/></radialGradient>
+      <radialGradient id="gCoco" cx="45%" cy="40%" r="70%"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#e9e2d6"/></radialGradient>
+      <linearGradient id="gLeaf" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7cc35a"/><stop offset="1" stop-color="#2f7a2c"/></linearGradient>
+      <symbol id="ing-strawberry" viewBox="0 0 100 100"><path d="M50 92C30 80 14 60 16 42c2-14 14-20 34-20s32 6 34 20c2 18-14 38-34 50z" fill="url(#gStraw)"/><g fill="#ffe38a"><ellipse cx="36" cy="44" rx="1.8" ry="2.6"/><ellipse cx="50" cy="40" rx="1.8" ry="2.6"/><ellipse cx="64" cy="44" rx="1.8" ry="2.6"/><ellipse cx="30" cy="58" rx="1.8" ry="2.6"/><ellipse cx="44" cy="56" rx="1.8" ry="2.6"/><ellipse cx="58" cy="56" rx="1.8" ry="2.6"/><ellipse cx="70" cy="58" rx="1.8" ry="2.6"/><ellipse cx="40" cy="70" rx="1.8" ry="2.6"/><ellipse cx="52" cy="72" rx="1.8" ry="2.6"/><ellipse cx="62" cy="68" rx="1.8" ry="2.6"/><ellipse cx="50" cy="84" rx="1.6" ry="2.2"/></g><path d="M50 26c-6-10-18-12-26-8 8 2 14 6 18 10-10-2-18 2-22 8 10-4 20-4 30-6 10 2 20 2 30 6-4-6-12-10-22-8 4-4 10-8 18-10-8-4-20-2-26 8z" fill="url(#gLeaf)"/><path d="M50 26l2-14" stroke="#3c7a2a" stroke-width="3" stroke-linecap="round"/></symbol>
+      <symbol id="ing-choc" viewBox="0 0 100 100"><rect x="14" y="14" width="72" height="72" rx="8" fill="url(#gChoc)"/><rect x="24" y="24" width="52" height="52" rx="5" fill="none" stroke="#9a6a4e" stroke-opacity=".55" stroke-width="3"/><path d="M24 24l52 52M76 24L24 76" stroke="#1d0e08" stroke-opacity=".35" stroke-width="2"/></symbol>
+      <symbol id="ing-cashew" viewBox="0 0 100 100"><path d="M30 20c-14 6-20 26-12 44 8 18 28 24 44 18 10-4 18-14 16-22-2-8-12-8-18-4-8 6-18 4-22-4-4-8 0-16 6-20 6-4 6-12-2-14-4-1-8 0-12 2z" fill="url(#gCashew)"/><path d="M34 30c-6 6-8 18-2 28" stroke="#fff" stroke-opacity=".5" stroke-width="3" fill="none" stroke-linecap="round"/></symbol>
+      <symbol id="ing-caramel" viewBox="0 0 100 100"><path d="M50 10C40 30 24 44 24 62a26 26 0 0052 0C76 44 60 30 50 10z" fill="url(#gCaramel)"/><ellipse cx="40" cy="58" rx="6" ry="10" fill="#fff" fill-opacity=".45" transform="rotate(-20 40 58)"/></symbol>
+      <symbol id="ing-hazelnut" viewBox="0 0 100 100"><circle cx="50" cy="56" r="32" fill="url(#gHazel)"/><path d="M26 44c4-14 16-24 24-24s20 10 24 24c-8-4-16-6-24-6s-16 2-24 6z" fill="#d6a56d"/><path d="M50 20v-8" stroke="#6b3a1a" stroke-width="4" stroke-linecap="round"/><g stroke="#3a1c0a" stroke-opacity=".35" stroke-width="2" fill="none"><path d="M36 50c-4 10-4 22 2 30"/><path d="M50 46v38"/><path d="M64 50c4 10 4 22-2 30"/></g></symbol>
+      <symbol id="ing-coffee" viewBox="0 0 100 100"><ellipse cx="50" cy="50" rx="26" ry="36" fill="url(#gBean)" transform="rotate(-25 50 50)"/><path d="M58 18c-14 10-4 24-12 34s-6 22 2 30" stroke="#140905" stroke-width="5" fill="none" stroke-linecap="round" transform="rotate(-25 50 50)"/></symbol>
+      <symbol id="ing-passion" viewBox="0 0 100 100"><circle cx="50" cy="50" r="38" fill="url(#gPassRind)"/><circle cx="50" cy="50" r="29" fill="#fff3c4"/><circle cx="50" cy="50" r="25" fill="url(#gPassPulp)"/><g fill="#2a1a0a"><circle cx="42" cy="42" r="2.6"/><circle cx="56" cy="40" r="2.6"/><circle cx="62" cy="52" r="2.6"/><circle cx="52" cy="60" r="2.6"/><circle cx="40" cy="56" r="2.6"/><circle cx="48" cy="50" r="2.4"/><circle cx="58" cy="64" r="2.2"/><circle cx="36" cy="48" r="2.2"/></g></symbol>
+      <symbol id="ing-pistachio" viewBox="0 0 100 100"><path d="M50 12C30 14 18 34 20 56s16 34 30 34 28-12 30-34S70 10 50 12z" fill="url(#gPistShell)"/><path d="M50 22c-12 2-18 16-16 32s8 26 16 26 14-10 16-26-4-30-16-32z" fill="url(#gPistNut)"/><path d="M48 30c-4 8-4 20 0 30" stroke="#e8f5c0" stroke-opacity=".6" stroke-width="3" fill="none" stroke-linecap="round"/></symbol>
+      <symbol id="ing-almond" viewBox="0 0 100 100"><path d="M50 8C34 24 24 44 26 62c2 16 12 26 24 26s22-10 24-26C76 44 66 24 50 8z" fill="url(#gAlmond)"/><g stroke="#5a2c0e" stroke-opacity=".35" stroke-width="2" fill="none"><path d="M42 30c-4 14-4 30 0 46"/><path d="M50 22v60"/><path d="M58 30c4 14 4 30 0 46"/></g></symbol>
+      <symbol id="ing-coconut" viewBox="0 0 100 100"><path d="M10 50a40 40 0 0080 0z" fill="#6b3f22"/><path d="M15 50a35 33 0 0070 0z" fill="url(#gCoco)"/><path d="M10 50h80" stroke="#4a2814" stroke-width="3"/><g stroke="#8a5a3a" stroke-width="1.5" stroke-linecap="round"><path d="M14 64l-4 3"/><path d="M22 76l-4 4"/><path d="M34 86l-2 5"/><path d="M50 90v5"/><path d="M66 86l2 5"/><path d="M78 76l4 4"/><path d="M86 64l4 3"/></g></symbol>
+      <symbol id="ing-vanilla" viewBox="0 0 100 100"><path d="M18 84C40 60 60 36 82 14" stroke="#2b1a10" stroke-width="7" stroke-linecap="round" fill="none"/><path d="M20 82C42 58 62 34 80 16" stroke="#5a3a24" stroke-width="2" stroke-linecap="round" fill="none"/><g fill="#f6f0e2"><path d="M70 70c8-8 22-6 22 2-8 2-14 6-22-2z"/><path d="M70 70c-2 10 4 20 10 18 0-8-2-14-10-18z"/></g></symbol>
+    </defs>
+  </svg>
+
+  
+<!-- LAYERS: the bonbon opens as you scroll -->
   <section class="layers" id="layers" aria-label="Inside a Cocoa Gallery bonbon">
     <div class="l-pin" id="lPin">
       <div class="l-head" id="lHead">
@@ -579,104 +595,74 @@ footer{border-top:1px solid #241f1b;padding:36px 0}
   } else { els.forEach(function(el){ el.classList.add('in'); }); }
 
 
-  /* ===== SHOWCASE: bonbon changes as you scroll ===== */
+  /* ===== SHOWCASE: rings carousel ===== */
   (function(){
-    var sec = $('show'), pin = $('pin'), wheel = $('wheel'), N = BONBONS.length, STEP = 34;
+    var hero = $('show'), stage = $('rStage'), N = BONBONS.length;
     var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    sec.style.height = 'calc(' + (N * 38) + 'vh + 100vh)';
-    $('sTotal').textContent = String(N).padStart(2, '0');
-    wheel.innerHTML = BONBONS.map(function(b, i){
-      return '<div class="w-item" style="--a:' + (i * STEP) + 'deg"><img src="' + b.cut + '" alt="" width="440" height="440"' + (i > 1 ? ' loading="lazy"' : '') + '></div>';
-    }).join('');
-    $('thumbs').innerHTML = BONBONS.map(function(b, i){
-      return '<button type="button" class="thumb-b" data-go="' + i + '" aria-label="' + esc(b.name) + '"><img src="' + b.cut + '" alt="" width="40" height="40"></button>';
-    }).join('');
-    var items = wheel.children, thumbs = $('thumbs').children;
-    var shapes = ['44% 56% 38% 62% / 52% 40% 60% 48%','58% 42% 55% 45% / 42% 58% 42% 58%','50% 50% 35% 65% / 60% 45% 55% 40%','38% 62% 60% 40% / 48% 55% 45% 52%'];
-    var cur = -1, swapT;
+    var ING = { 1:['strawberry','strawberry','strawberry'], 2:['choc','choc','choc'], 3:['cashew','caramel','cashew'], 4:['caramel','caramel','choc'],
+      5:['hazelnut','hazelnut','hazelnut'], 6:['coffee','coffee','coffee'], 7:['passion','passion','choc'], 8:['pistachio','pistachio','pistachio'],
+      9:['almond','almond','almond'], 10:['pistachio','pistachio','pistachio'], 11:['coconut','vanilla','coconut'] };
+    // ring colours derived from each bonbon's background
+    function mix(hex, t){ var n = parseInt(hex.slice(1), 16), r = n >> 16, g = n >> 8 & 255, b = n & 255;
+      var c = t > 0 ? [r + (255 - r) * t, g + (255 - g) * t, b + (255 - b) * t] : [r * (1 + t), g * (1 + t), b * (1 + t)];
+      return 'rgb(' + c.map(Math.round).join(',') + ')'; }
+    var spots = [[-62,1.0,-20],[-18,.8,30],[22,1.1,-40],[66,.85,15],[118,1.0,50],[160,.8,-10],[205,1.05,25],[248,.9,-35],[292,.8,10]];
+    $('rTotal').textContent = String(N).padStart(2, '0');
+    $('rDots').innerHTML = BONBONS.map(function(b, i){ return '<button type="button" class="r-dot" data-i="' + i + '" aria-label="' + esc(b.name) + '"></button>'; }).join('');
+    var dots = $('rDots').children, cur = -1, timer, swapT;
 
+    function buildSet(b){
+      var el = document.createElement('div'); el.className = 'r-set enter';
+      var list = ING[b.id] || ['choc'], html = '';
+      var orb = parseFloat(getComputedStyle(hero).getPropertyValue('--ORB')) || 270;
+      spots.forEach(function(s, k){
+        var a = s[0] * Math.PI / 180, r = orb * (k % 2 ? 1.18 : 1.0);
+        html += '<div class="r-ing" style="transform:translate(' + (Math.cos(a) * r).toFixed(1) + 'px,' + (Math.sin(a) * r).toFixed(1) + 'px) rotate(' + s[2] + 'deg) scale(' + s[1] + ')">' +
+          '<svg viewBox="0 0 100 100" style="animation-delay:' + (-k * 0.7) + 's"><use href="#ing-' + list[k % list.length] + '"/></svg></div>';
+      });
+      html += '<div class="r-bonbon"><img src="' + b.cut + '" alt="" width="440" height="440"></div>';
+      el.innerHTML = html; return el;
+    }
     function setText(b, i){
-      $('sNo').textContent = String(i + 1).padStart(2, '0');
-      $('sType').textContent = b.note;
-      $('sName').textContent = b.name;
-      $('sDesc').textContent = b.desc;
-      $('sAdd').setAttribute('data-add', b.id);
-      $('sAdd').setAttribute('aria-label', 'Add ' + b.name + ' to my box');
+      $('rNo').textContent = String(i + 1).padStart(2, '0');
+      $('rType').textContent = b.note; $('rName').textContent = b.name; $('rDesc').textContent = b.desc;
+      $('rAdd').setAttribute('data-add', b.id); $('rAdd').setAttribute('aria-label', 'Add ' + b.name + ' to my box');
     }
-    // colours + text change when the nearest bonbon changes
-    function show(i, first){
-      if (i === cur) return;
+    function go(i, first){
+      i = (i + N) % N; if (i === cur) return;
       var b = BONBONS[i]; cur = i;
-      pin.style.setProperty('--bg', b.bg);
-      pin.style.setProperty('--blob', b.blob);
-      pin.style.setProperty('--blobRot', (i * 24) + 'deg');
-      for (var k = 0; k < thumbs.length; k++) thumbs[k].setAttribute('aria-current', k === i ? 'true' : 'false');
-      var t = $('sText');
-      if (first || reduce) { setText(b, i); return; }
-      clearTimeout(swapT);
-      t.classList.add('out');
-      swapT = setTimeout(function(){
-        setText(b, i);
-        t.classList.remove('out'); t.classList.add('pre');
-        void t.offsetWidth;
-        t.classList.remove('pre');
-      }, 220);
+      hero.style.setProperty('--bg', b.blob);
+      hero.style.setProperty('--r1', mix(b.blob, 0.06)); hero.style.setProperty('--r2', mix(b.blob, -0.12));
+      hero.style.setProperty('--r3', mix(b.blob, 0.10)); hero.style.setProperty('--r4', mix(b.blob, -0.18));
+      for (var k = 0; k < dots.length; k++) dots[k].setAttribute('aria-current', k === i ? 'true' : 'false');
+      var old = stage.querySelectorAll('.r-set'), next = buildSet(b);
+      stage.appendChild(next);
+      if (first || reduce) { next.classList.remove('enter'); [].forEach.call(old, function(o){ o.remove(); }); setText(b, i); return; }
+      void next.offsetWidth; next.classList.remove('enter');
+      [].forEach.call(old, function(o){ o.classList.add('leave'); setTimeout(function(){ o.remove(); }, 1000); });
+      var t = $('rText'); clearTimeout(swapT); t.classList.add('out');
+      swapT = setTimeout(function(){ setText(b, i); t.classList.remove('out'); t.classList.add('pre'); void t.offsetWidth; t.classList.remove('pre'); }, 260);
     }
-
-    // continuous wheel position, eased toward the scroll target every frame
-    var pos = 0, target = 0, running = false, lastDrawn = -1;
-    function smoothstep(x){ return x * x * (3 - 2 * x); }
-    var mTop = 0, mTotal = 1, Rpx = 560;
-    function measure(){
-      var r = sec.getBoundingClientRect();
-      mTop = r.top + window.scrollY; mTotal = Math.max(1, sec.offsetHeight - pin.offsetHeight);
-      Rpx = parseFloat(getComputedStyle(sec).getPropertyValue('--R')) || 560;
-      lastDrawn = -1;
-    }
-    function targetFromScroll(){
-      var p = Math.min(1, Math.max(0, (window.scrollY - mTop) / mTotal));
-      $('sBar').style.transform = 'scaleX(' + p + ')';
-      $('sHint').style.opacity = p > 0.02 ? '0' : '1';
-      // each bonbon gets a short pause, then glides to the next one
-      var x = Math.min(N - 1, Math.max(0, p * N - 0.5));
-      var base = Math.floor(x), f = x - base;
-      var g = smoothstep(Math.min(1, Math.max(0, (f - 0.2) / 0.6)));
-      return Math.min(N - 1, base + g);
-    }
-    function draw(){
-      if (Math.abs(pos - lastDrawn) < 0.0005) return;
-      lastDrawn = pos;
-      wheel.style.transform = 'rotate(' + (-pos * STEP).toFixed(3) + 'deg)';
-      for (var k = 0; k < items.length; k++) {
-        var d = Math.abs(k - pos);
-        if (d > 2) { if (items[k].style.opacity !== '0') items[k].style.opacity = '0'; continue; }
-        var op = d < 1 ? 1 - 0.7 * d : 0.3 * (2 - d);
-        var sc = 1 - 0.4 * Math.min(1, d);
-        items[k].style.opacity = op.toFixed(3);
-        items[k].style.transform = 'rotate(' + (k * STEP) + 'deg) translate3d(0,' + (-Rpx) + 'px,0) scale(' + sc.toFixed(3) + ')';
-      }
-      show(Math.round(pos));
-    }
-    function loop(){
-      var diff = target - pos;
-      pos += reduce ? diff : diff * 0.24;
-      if (Math.abs(diff) < 0.001) { pos = target; running = false; }
-      draw();
-      if (running) requestAnimationFrame(loop);
-    }
-    function kick(){ target = targetFromScroll(); if (!running) { running = true; requestAnimationFrame(loop); } }
-    window.addEventListener('scroll', kick, { passive: true });
-    window.addEventListener('resize', function(){ measure(); kick(); });
-    window.addEventListener('load', function(){ measure(); kick(); });
-    $('thumbs').addEventListener('click', function(e){
-      var g = e.target.closest('[data-go]'); if (!g) return;
-      var i = Number(g.getAttribute('data-go'));
-      window.scrollTo({ top: mTop + mTotal * (i + 0.5) / N, behavior: reduce ? 'auto' : 'smooth' });
-    });
-    measure(); show(0, true); target = pos = targetFromScroll(); lastDrawn = -1; draw();
+    function auto(){ clearInterval(timer); if (!reduce) timer = setInterval(function(){ go(cur + 1); }, 5000); }
+    $('rNext').addEventListener('click', function(){ go(cur + 1); auto(); });
+    $('rPrev').addEventListener('click', function(){ go(cur - 1); auto(); });
+    $('rDots').addEventListener('click', function(e){ var d = e.target.closest('[data-i]'); if (d) { go(Number(d.getAttribute('data-i'))); auto(); } });
+    hero.addEventListener('mouseenter', function(){ clearInterval(timer); });
+    hero.addEventListener('mouseleave', auto);
+    // swipe on phones
+    var sx = null, sy = null;
+    hero.addEventListener('touchstart', function(e){ sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
+    hero.addEventListener('touchend', function(e){
+      if (sx === null) return; var dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+      if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) { go(cur + (dx < 0 ? 1 : -1)); auto(); } sx = null;
+    }, { passive: true });
+    // pause auto-play when the hero is off screen
+    if ('IntersectionObserver' in window) new IntersectionObserver(function(es){ es[0].isIntersecting ? auto() : clearInterval(timer); }).observe(hero);
+    go(0, true); auto();
   })();
 
-  /* ===== LAYERS: bonbon opens into its layers as you scroll ===== */
+  
+/* ===== LAYERS: bonbon opens into its layers as you scroll ===== */
   (function(){
     var sec = $('layers'), pin = $('lPin');
     var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
