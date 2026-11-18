@@ -57,7 +57,8 @@ button{font:inherit}
 }
 
 /* SHOWCASE (rings carousel) */
-.ring-hero{position:relative;height:calc(100vh - 76px);height:calc(100svh - 76px);min-height:600px;overflow:hidden;background:var(--bg,#a3241f);transition:background-color .7s ease;color:#fff;touch-action:pan-y}
+.ring-wrap{position:relative}
+.ring-hero{position:sticky;top:76px;height:calc(100vh - 76px);height:calc(100svh - 76px);min-height:600px;overflow:hidden;contain:layout paint;background:var(--bg,#a3241f);transition:background-color .7s ease;color:#fff;touch-action:pan-y}
 .rings{position:absolute;left:var(--cx,60%);top:50%;width:0;height:0;pointer-events:none}
 .rings i{position:absolute;border-radius:50%;left:50%;top:50%;transform:translate(-50%,-50%);transition:background-color .7s ease}
 .rings i:nth-child(1){width:calc(var(--RS) * 2.9);height:calc(var(--RS) * 2.9);background:var(--r1)}
@@ -68,10 +69,11 @@ button{font:inherit}
 .r-set{position:absolute;left:0;top:0;width:0;height:0;transition:transform 1s cubic-bezier(.65,0,.25,1),opacity .8s ease;will-change:transform,opacity}
 .r-set.enter{transform:rotate(-70deg) scale(.7);opacity:0;transition:none}
 .r-set.leave{transform:rotate(70deg) scale(1.25);opacity:0}
+.r-spin{position:absolute;left:0;top:0;width:0;height:0;will-change:transform}
 .r-bonbon{position:absolute;width:var(--RS);height:var(--RS);left:calc(var(--RS) / -2);top:calc(var(--RS) / -2)}
 .r-bonbon img{width:100%;height:100%;display:block;filter:drop-shadow(0 30px 30px rgba(0,0,0,.35))}
 .r-ing{position:absolute;width:var(--IS);height:var(--IS);left:calc(var(--IS) / -2);top:calc(var(--IS) / -2)}
-.r-ing svg{width:100%;height:100%;display:block;filter:drop-shadow(0 10px 12px rgba(0,0,0,.25));animation:drift 6s ease-in-out infinite}
+.r-ing svg{width:100%;height:100%;display:block;animation:drift 6s ease-in-out infinite}
 @keyframes drift{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-8px) rotate(6deg)}}
 .r-copy{position:absolute;left:max(24px,calc((100% - 1280px) / 2 + 24px));top:50%;transform:translateY(-50%);width:min(380px,34vw);z-index:3}
 .r-kicker{margin:0 0 10px;font-size:12px;letter-spacing:3px;text-transform:uppercase;font-weight:700;opacity:.85}
@@ -89,6 +91,7 @@ button{font:inherit}
 .r-prev{left:calc(var(--cx,60%) - 175px)}
 .r-next{left:calc(var(--cx,60%) + 123px)}
 .r-dots{position:absolute;left:var(--cx,60%);bottom:33px;transform:translateX(-50%);z-index:4;display:flex;gap:8px;align-items:center}
+.r-bar{position:absolute;left:0;bottom:0;height:3px;width:100%;background:rgba(255,255,255,.85);transform:scaleX(0);transform-origin:left;z-index:4}
 .r-dot{width:10px;height:10px;border-radius:999px;border:0;padding:0;background:rgba(255,255,255,.45);cursor:pointer;transition:width .3s,background .3s}
 .r-dot[aria-current="true"]{width:28px;background:#fff}
 .r-count{position:absolute;right:max(24px,calc((100% - 1280px) / 2 + 24px));top:28px;z-index:4;font-family:var(--serif);font-size:18px;opacity:.85}
@@ -277,7 +280,8 @@ footer{border-top:1px solid #241f1b;padding:36px 0}
 
 <main id="top">
   <!-- SHOWCASE: rings carousel (arrows / swipe / auto-play) -->
-  <section class="ring-hero" id="show" aria-roledescription="carousel" aria-label="Our bonbons">
+  <section class="ring-wrap" id="show" aria-label="Our bonbons">
+  <div class="ring-hero" id="rHero" aria-roledescription="carousel">
     <div class="rings" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
     <div class="r-stage" id="rStage" aria-hidden="true"></div>
     <div class="r-copy">
@@ -295,6 +299,8 @@ footer{border-top:1px solid #241f1b;padding:36px 0}
     <button type="button" class="r-arrow r-prev" id="rPrev" aria-label="Previous bonbon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></button>
     <button type="button" class="r-arrow r-next" id="rNext" aria-label="Next bonbon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg></button>
     <div class="r-dots" id="rDots" role="group" aria-label="Choose a bonbon"></div>
+    <div class="r-bar" id="rBar"></div>
+  </div>
   </section>
 
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -597,7 +603,7 @@ footer{border-top:1px solid #241f1b;padding:36px 0}
 
   /* ===== SHOWCASE: rings carousel ===== */
   (function(){
-    var hero = $('show'), stage = $('rStage'), N = BONBONS.length;
+    var sec = $('show'), hero = $('rHero'), stage = $('rStage'), N = BONBONS.length;
     var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var ING = { 1:['strawberry','strawberry','strawberry'], 2:['choc','choc','choc'], 3:['cashew','caramel','cashew'], 4:['caramel','caramel','choc'],
       5:['hazelnut','hazelnut','hazelnut'], 6:['coffee','coffee','coffee'], 7:['passion','passion','choc'], 8:['pistachio','pistachio','pistachio'],
@@ -613,15 +619,15 @@ footer{border-top:1px solid #241f1b;padding:36px 0}
 
     function buildSet(b){
       var el = document.createElement('div'); el.className = 'r-set enter';
-      var list = ING[b.id] || ['choc'], html = '';
+      var list = ING[b.id] || ['choc'], html = '<div class="r-spin">';
       var orb = parseFloat(getComputedStyle(hero).getPropertyValue('--ORB')) || 270;
       spots.forEach(function(s, k){
         var a = s[0] * Math.PI / 180, r = orb * (k % 2 ? 1.18 : 1.0);
         html += '<div class="r-ing" style="transform:translate(' + (Math.cos(a) * r).toFixed(1) + 'px,' + (Math.sin(a) * r).toFixed(1) + 'px) rotate(' + s[2] + 'deg) scale(' + s[1] + ')">' +
           '<svg viewBox="0 0 100 100" style="animation-delay:' + (-k * 0.7) + 's"><use href="#ing-' + list[k % list.length] + '"/></svg></div>';
       });
-      html += '<div class="r-bonbon"><img src="' + b.cut + '" alt="" width="440" height="440"></div>';
-      el.innerHTML = html; return el;
+      html += '</div><div class="r-bonbon"><img src="' + b.cut + '" alt="" width="440" height="440"></div>';
+      el.innerHTML = html; if (lastSpin !== null) el.firstElementChild.style.transform = 'rotate(' + lastSpin + 'deg)'; return el;
     }
     function setText(b, i){
       $('rNo').textContent = String(i + 1).padStart(2, '0');
@@ -636,6 +642,8 @@ footer{border-top:1px solid #241f1b;padding:36px 0}
       hero.style.setProperty('--r3', mix(b.blob, 0.10)); hero.style.setProperty('--r4', mix(b.blob, -0.18));
       for (var k = 0; k < dots.length; k++) dots[k].setAttribute('aria-current', k === i ? 'true' : 'false');
       var old = stage.querySelectorAll('.r-set'), next = buildSet(b);
+      if (old.length > 2) for (var q = 0; q < old.length - 2; q++) old[q].remove();
+      old = stage.querySelectorAll('.r-set');
       stage.appendChild(next);
       if (first || reduce) { next.classList.remove('enter'); [].forEach.call(old, function(o){ o.remove(); }); setText(b, i); return; }
       void next.offsetWidth; next.classList.remove('enter');
@@ -643,26 +651,32 @@ footer{border-top:1px solid #241f1b;padding:36px 0}
       var t = $('rText'); clearTimeout(swapT); t.classList.add('out');
       swapT = setTimeout(function(){ setText(b, i); t.classList.remove('out'); t.classList.add('pre'); void t.offsetWidth; t.classList.remove('pre'); }, 260);
     }
-    function auto(){ clearInterval(timer); if (!reduce) timer = setInterval(function(){ go(cur + 1); }, 5000); }
-    $('rNext').addEventListener('click', function(){ go(cur + 1); auto(); });
-    $('rPrev').addEventListener('click', function(){ go(cur - 1); auto(); });
-    $('rDots').addEventListener('click', function(e){ var d = e.target.closest('[data-i]'); if (d) { go(Number(d.getAttribute('data-i'))); auto(); } });
-    hero.addEventListener('mouseenter', function(){ clearInterval(timer); });
-    hero.addEventListener('mouseleave', auto);
-    // swipe on phones
-    var sx = null, sy = null;
-    hero.addEventListener('touchstart', function(e){ sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
-    hero.addEventListener('touchend', function(e){
-      if (sx === null) return; var dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
-      if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) { go(cur + (dx < 0 ? 1 : -1)); auto(); } sx = null;
-    }, { passive: true });
-    // pause auto-play when the hero is off screen
-    if ('IntersectionObserver' in window) new IntersectionObserver(function(es){ es[0].isIntersecting ? auto() : clearInterval(timer); }).observe(hero);
-    go(0, true); auto();
+    sec.style.height = 'calc(' + (N * 34) + 'vh + 100vh)';
+    var top = 0, total = 1;
+    function measure(){ var r = sec.getBoundingClientRect(); top = r.top + window.scrollY; total = Math.max(1, sec.offsetHeight - hero.offsetHeight); }
+    function jump(i){ window.scrollTo({ top: top + total * (i + 0.5) / N, behavior: reduce ? 'auto' : 'smooth' }); }
+    var ticking = false, lastSpin = null;
+    function onScroll(){
+      ticking = false;
+      var p = Math.min(1, Math.max(0, (window.scrollY - top) / total));
+      var x = Math.min(N - 0.0001, p * N), i = Math.floor(x), local = x - i;
+      go(i);
+      $('rBar').style.transform = 'scaleX(' + p.toFixed(4) + ')';
+      if (!reduce) {
+        var spin = ((local - 0.5) * 28).toFixed(2);
+        if (spin !== lastSpin) { var sp = stage.lastElementChild && stage.lastElementChild.firstElementChild; if (sp) sp.style.transform = 'rotate(' + spin + 'deg)'; lastSpin = spin; }
+      }
+    }
+    window.addEventListener('scroll', function(){ if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } }, { passive: true });
+    window.addEventListener('resize', function(){ measure(); onScroll(); });
+    window.addEventListener('load', function(){ measure(); onScroll(); });
+    $('rNext').addEventListener('click', function(){ jump(Math.min(N - 1, cur + 1)); });
+    $('rPrev').addEventListener('click', function(){ jump(Math.max(0, cur - 1)); });
+    $('rDots').addEventListener('click', function(e){ var d = e.target.closest('[data-i]'); if (d) jump(Number(d.getAttribute('data-i'))); });
+    go(0, true); measure(); onScroll();
   })();
 
-  
-/* ===== LAYERS: bonbon opens into its layers as you scroll ===== */
+  /* ===== LAYERS: bonbon opens into its layers as you scroll ===== */
   (function(){
     var sec = $('layers'), pin = $('lPin');
     var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
